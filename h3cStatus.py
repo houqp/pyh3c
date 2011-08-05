@@ -16,6 +16,7 @@ def load_config():
   parser = ConfigParser.SafeConfigParser()
   parser.read('pyh3c.conf')
   globals()['dev'] = parser.get('sys_conf', 'dev')
+  globals()['dhcp_script'] = parser.get('sys_conf', 'dhcp_script')
   globals()['user_name'] = parser.get('account', 'user_name')
   globals()['user_pass'] = parser.get('account', 'user_pass')
 

@@ -12,7 +12,6 @@ from h3cPack import *
 import h3cStatus
 
 client_hwadd = ""
-server_hwadd = ""
 
 response_type = { 
     0x00:'nothing',
@@ -29,27 +28,19 @@ eap_type = {
     0x19:'unknown' 
     }
 
-
 def send_start():
   """
   start the authentication
   """
   print " [*] Send out the authentication request."
+  # manually construct the header because it's special
   start_radius = RADIUS_H3C(
         code = 1,
         id = 1,
         len = 0,
         data = '\x00'
       )
-  start_packet = dpkt.ethernet.Ethernet(
-        #dst = "\x08\x00\x27\x00\xd7\x15",
-        #dst = "\x01\x80\xc2\x00\x00\x03",
-        dst = "\xff\xff\xff\xff\xff\xff",
-        src = client_hwadd,
-        type = 0x888e,
-        data = str(start_radius)
-      )
-  #print "%s" % binascii.b2a_hex(str(start_packet))
+  start_packet = pack_ether(client_hwadd, "\xff\xff\xff\xff\xff\xff", start_radius)
   sender.send(str(start_packet))
 
 def identity_handler(ether):
@@ -61,26 +52,10 @@ def identity_handler(ether):
   else:
     print " [*] Received identity challenge request."
     print "     ==> [#] Now sending identity challenge response."
-  identity_eap = RADIUS_H3C.EAP(
-        code = 0x02,
-        #@you may need to set id according to server's response here
-        id = 0x02,
-        len = 5 + len(h3cStatus.user_name),
-        type = 0x01,
-        data = h3cStatus.user_name
-      )
-  identity_radius = RADIUS_H3C(
-        code = 1,
-        id = 0,
-        len = identity_eap.len,
-        data = str(identity_eap)
-      )
-  identity_packet = dpkt.ethernet.Ethernet(
-        dst = ether.src,
-        src = client_hwadd,
-        type = 0x888e,
-        data = str(identity_radius)
-      )
+  #@you may need to set id according to server's response here
+  identity_eap = pack_eap(0x02, 0x02, 0x01, h3cStatus.user_name)
+  identity_radius = pack_radius(0x01, 0x00, identity_eap)
+  identity_packet = pack_ether(client_hwadd, ether.src, identity_radius)
   sender.send(str(identity_packet))
 
 def allocated_handler(ether):
@@ -90,41 +65,30 @@ def allocated_handler(ether):
   auth_data = "%s%s%s" % ( chr(len(h3cStatus.user_pass)), h3cStatus.user_pass, h3cStatus.user_name )
   print " [*] Received allocated challenge request."
   print "     ==> [#] Now sending allocated challenge response."
-  allocated_eap = RADIUS_H3C.EAP(
-    code = 0x02,
-    #@you may need to set id according to server's response here
-    id = 0x03,
-    len = 5 + len(h3cStatus.user_pass),
-    type = 0x07,
-    data = auth_data
-  )
-  allocated_radius = RADIUS_H3C(
-    code = 1,
-    id = 0,
-    len = allocated_eap.len,
-    data = str(allocated_eap)
-  )
-  allocated_packet = dpkt.ethernet.Ethernet(
-    dst = ether.src,
-    src = client_hwadd,
-    type = 0x888e,
-    data = str(allocated_radius)
-  )
+  #@you may need to set id according to server's response here
+  allocated_eap = pack_eap(0x02, 0x03, 0x07, auth_data)
+  allocated_radius = pack_radius(0x01, 0x00, allocated_eap)
+  allocated_packet = pack_ether(client_hwadd, ether.src, allocated_radius)
   sender.send(str(allocated_packet))
 
 def success_handler(ether):
   """
   handler for success
   """
-  print "\n"
-  print " /---------------------------------------------\ "
-  print "| [^_^] Successfully passed the authentication! |"
-  print " \---------------------------------------------/ "
-  print "\n"
   h3cStatus.auth_success = 1
-  #dhcp_command = "%s %s" % (h3cStatus.dhcp_script,h3cStatus.dev)
-  #(status, output) = commands.getstatusoutput(dhcp_command)
-  #print output
+  dhcp_command = "%s %s" % (h3cStatus.dhcp_script, h3cStatus.dev)
+  print ""
+  print "  /---------------------------------------------\ "
+  print " | [^_^] Successfully passed the authentication! |"
+  print "  \---------------------------------------------/ "
+  print ""
+  print " [#] running command: %s to get an IP." % dhcp_command
+  print ""
+  (status, output) = commands.getstatusoutput(dhcp_command)
+  print output
+  print ""
+  print " [!] Every thing is done now, happy surfing the Internet." 
+  print " [!] I will send hear beat packets to keep you online." 
 
 def h3c_unknown_handler(ether):
   """
@@ -146,8 +110,29 @@ def nothing_handler(ether):
   """
   pass
 
+def hello_world():
+  print ""
+  print " === PyH3C 0.1 ==="
+  print ""
+  print " [*] Activities from server."
+  print " [#] Activities from client." 
+  print " [!] Messages you may want to read."
+  print ""
+  print " ----------------------------------------------"
+  print " [!] This piece of software may not be working"
+  print " [!] as you expected. But if it really works, "
+  print " [!] remember to send me a Thank you letter via"
+  print " [!] qingping.hou@gmail.com."
+  print ""
+  print " [!] OK, I am just kidding. Forget about this."
+  print ""
+  print " [!] Now, let the hunt begin!"
+  print " ----------------------------------------------"
+  print ""
+
 if __name__ == "__main__":
 
+  hello_world()
   h3cStatus.load_config()
 
   sender = dnet.eth(h3cStatus.dev)
