@@ -3,6 +3,12 @@
 
 import ConfigParser
 
+__author__ = "houqp"
+__license__ = "GPL"
+__version__ = "0.1"
+__maintainer__ = "houqp"
+__email__ = "qingping.hou@gmail.com"
+
 dev = 'eth0'
 user_name = ""
 user_pass = ""

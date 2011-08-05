@@ -11,6 +11,12 @@ from h3cRadius import *
 from h3cPack import *
 import h3cStatus
 
+__author__ = "houqp"
+__license__ = "GPL"
+__version__ = "0.1"
+__maintainer__ = "houqp"
+__email__ = "qingping.hou@gmail.com"
+
 client_hwadd = ""
 
 response_type = { 

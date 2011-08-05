@@ -1,0 +1,24 @@
+PyH3C
+=====
+
+PyH3C is a program for passing h3c authentication in SYSU east campus.
+
+Usage
+-----
+
+Currently, no command line arguments are supported.
+So the only choice you have is using configuration file.
+
+Plz checkout pyh3c.conf.example for examples.
+
+You must have root previliege to run the program:
+
+    sudo python pyh3c.py
+
+Contributing
+------------
+
+There is lots of features that need to be added PyH3C.
+It will be great if you can help me make it a better software.
+
+

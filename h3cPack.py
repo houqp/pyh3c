@@ -5,6 +5,12 @@ import dpkt
 
 from h3cRadius import *
 
+__author__ = "houqp"
+__license__ = "GPL"
+__version__ = "1.0"
+__maintainer__ = "houqp"
+__email__ = "qingping.hou@gmail.com"
+
 def pack_ether(_src, _dst, _radius):
   """
   construct and return a radius header.
