@@ -1,0 +1,7 @@
+[sys_conf]
+dev = eth0
+dhcp_script = dhclient
+
+[account]
+user_name = test_name
+user_pass = test_pass
