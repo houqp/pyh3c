@@ -6,7 +6,12 @@ finish configuration create functions
     let the user set up configuration if
     no configuration file is found.
 
+display the message sent from the server
+
 add a GUI frontend
 
 add command line options
+
+add plugin funtions
+    write a plugin for paliba
 
