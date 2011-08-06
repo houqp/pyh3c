@@ -51,13 +51,13 @@ def send_start():
 
 def identity_handler(ether):
   """ 
-  response username to server
+  response user_name to server
   """
   if h3cStatus.auth_success:
     print " [*] Received server check online request, sending keepalive packet."
   else:
     print " [*] Received identity challenge request."
-    print "     ==> [#] Now sending identity challenge response."
+    print "     [#] Now sending identity challenge response."
   #@you may need to set id according to server's response here
   identity_eap = pack_eap(0x02, 0x02, 0x01, h3cStatus.user_name)
   identity_radius = pack_radius(0x01, 0x00, identity_eap)
@@ -70,7 +70,7 @@ def allocated_handler(ether):
   """
   auth_data = "%s%s%s" % ( chr(len(h3cStatus.user_pass)), h3cStatus.user_pass, h3cStatus.user_name )
   print " [*] Received allocated challenge request."
-  print "     ==> [#] Now sending allocated challenge response."
+  print "     [#] Now sending allocated challenge response."
   #@you may need to set id according to server's response here
   allocated_eap = pack_eap(0x02, 0x03, 0x07, auth_data)
   allocated_radius = pack_radius(0x01, 0x00, allocated_eap)
@@ -108,11 +108,19 @@ def failure_handler(ether):
   handler for failed authentication
   """
   h3cStatus.auth_success = 0
-  exit(0)
+  print " [*] Received authentication failed packet from server."
+  print "     [#] Try to restart the authentication."
+  send_start()
 
 def nothing_handler(ether):
   """
   handler for others, just let go
+  """
+  pass
+
+def check_online():
+  """
+  check to see whether the client is still online.
   """
   pass
 

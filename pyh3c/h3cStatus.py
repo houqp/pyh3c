@@ -20,7 +20,9 @@ def load_config():
   load configuration file
   """
   parser = ConfigParser.SafeConfigParser()
-  parser.read('pyh3c.conf')
+  if not parser.read( ('pyh3c.conf', '../pyh3c.conf')):
+    print " [!] Open configuration file failed!"
+    exit(0)
   globals()['dev'] = parser.get('sys_conf', 'dev')
   globals()['dhcp_script'] = parser.get('sys_conf', 'dhcp_script')
   globals()['user_name'] = parser.get('account', 'user_name')
