@@ -3,6 +3,14 @@ PyH3C
 
 PyH3C is a program for passing h3c authentication in SYSU east campus.
 
+
+Installation
+-------
+
+You need to install dpkt, libdnet and pcap python library 
+before you run the program.
+
+
 Usage
 -----
 
@@ -14,6 +22,7 @@ Plz checkout pyh3c.conf.example for examples.
 You must have root previliege to run the program:
 
     sudo python pyh3c.py
+
 
 Contributing
 ------------
