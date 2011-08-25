@@ -6,6 +6,7 @@ import dpkt
 import binascii
 import dnet
 import commands
+from os import getuid
 
 from h3cRadius import *
 from h3cPack import *
@@ -13,7 +14,7 @@ import h3cStatus
 
 __author__ = "houqp"
 __license__ = "GPL"
-__version__ = "0.1"
+__version__ = "0.1.1"
 __maintainer__ = "houqp"
 __email__ = "qingping.hou@gmail.com"
 
@@ -126,7 +127,7 @@ def check_online():
 
 def hello_world():
   print ""
-  print " === PyH3C 0.1 ==="
+  print " === PyH3C 0.1.1 ==="
   print ""
   print " [*] Activities from server."
   print " [#] Activities from client." 
@@ -145,6 +146,10 @@ def hello_world():
   print ""
 
 if __name__ == "__main__":
+
+  if not (getuid() == 0):
+    print " [!] You must run with root privilege!"
+    exit(0)
 
   hello_world()
   h3cStatus.load_config()
