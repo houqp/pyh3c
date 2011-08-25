@@ -10,6 +10,18 @@ Installation
 You need to install dpkt, libdnet and pcap python library 
 before you run the program.
 
+So for Ubuntu users:
+
+    apt-get install python-pypcap python-dpkt python-dumbnet
+
+For Gentoo users:
+
+    emerge pypcap dpkt libdnet
+
+When you emerge libdnet, remember to have python use flag turn on (It's turned on by default).
+
+Sorry for coming along with lots of dependencies.
+
 
 Usage
 -----

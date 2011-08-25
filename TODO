@@ -1,3 +1,5 @@
+fix the dumbnet library
+
 100% simulate the hearbeat packet from win32 h3c client
 
 finish the check_online() function

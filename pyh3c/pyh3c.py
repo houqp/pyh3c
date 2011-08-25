@@ -94,7 +94,7 @@ def success_handler(ether):
   print output
   print ""
   print " [!] Every thing is done now, happy surfing the Internet." 
-  print " [!] I will send hear beat packets to keep you online." 
+  print " [!] I will send heart beat packets to keep you online." 
 
 def h3c_unknown_handler(ether):
   """
