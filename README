@@ -7,8 +7,7 @@ PyH3C is a program for passing h3c authentication in SYSU east campus.
 Installation
 -------
 
-You need to install dpkt, libdnet and pcap python library 
-before you run the program.
+You need to install dpkt, libdnet and pypcap python library before you run the program.
 
 So for Ubuntu users:
 
@@ -29,7 +28,7 @@ Usage
 Currently, no command line arguments are supported.
 So the only choice you have is using configuration file.
 
-Plz checkout pyh3c.conf.example for examples.
+Please checkout pyh3c.conf.example for examples.
 
 You must have root previliege to run the program:
 
@@ -39,7 +38,8 @@ You must have root previliege to run the program:
 Contributing
 ------------
 
-There is lots of features that need to be added PyH3C.
+Any contribution is welcome.
+
 It will be great if you can help me make it a better software.
 
 
