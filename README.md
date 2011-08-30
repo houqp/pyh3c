@@ -19,7 +19,7 @@ For Gentoo users:
 
 When you emerge libdnet, remember to have python use flag turn on (It's turned on by default).
 
-Sorry for coming along with lots of dependencies.
+Sorry for coming along with lots of dependencies. :-(
 
 
 Usage
@@ -30,7 +30,7 @@ So the only choice you have is using configuration file.
 
 Please checkout pyh3c.conf.example for examples.
 
-You must have root previliege to run the program:
+You must run the program with root previliege:
 
     sudo python pyh3c.py
 

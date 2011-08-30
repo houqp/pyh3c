@@ -14,7 +14,7 @@ import h3cStatus
 
 __author__ = "houqp"
 __license__ = "GPL"
-__version__ = "0.1.1"
+__version__ = "0.2.0"
 __maintainer__ = "houqp"
 __email__ = "qingping.hou@gmail.com"
 
@@ -35,11 +35,10 @@ eap_type = {
     0x19:'unknown' 
     }
 
-def send_start():
+def send_start(callback):
   """
   start the authentication
   """
-  print " [*] Send out the authentication request."
   # manually construct the header because it's special
   start_radius = RADIUS_H3C(
         code = 1,
@@ -49,74 +48,57 @@ def send_start():
       )
   start_packet = pack_ether(client_hwadd, "\xff\xff\xff\xff\xff\xff", start_radius)
   sender.send(str(start_packet))
+  callback()
 
-def identity_handler(ether):
+def identity_handler(ether, callback):
   """ 
   response user_name to server
   """
-  if h3cStatus.auth_success:
-    print " [*] Received server check online request, sending keepalive packet."
-  else:
-    print " [*] Received identity challenge request."
-    print "     [#] Now sending identity challenge response."
   #@you may need to set id according to server's response here
   identity_eap = pack_eap(0x02, 0x02, 0x01, h3cStatus.user_name)
   identity_radius = pack_radius(0x01, 0x00, identity_eap)
   identity_packet = pack_ether(client_hwadd, ether.src, identity_radius)
   sender.send(str(identity_packet))
+  callback()
 
-def allocated_handler(ether):
+def allocated_handler(ether, callback):
   """ 
   response password to server
   """
   auth_data = "%s%s%s" % ( chr(len(h3cStatus.user_pass)), h3cStatus.user_pass, h3cStatus.user_name )
-  print " [*] Received allocated challenge request."
-  print "     [#] Now sending allocated challenge response."
   #@you may need to set id according to server's response here
   allocated_eap = pack_eap(0x02, 0x03, 0x07, auth_data)
   allocated_radius = pack_radius(0x01, 0x00, allocated_eap)
   allocated_packet = pack_ether(client_hwadd, ether.src, allocated_radius)
   sender.send(str(allocated_packet))
+  callback()
 
-def success_handler(ether):
+def success_handler(ether, callback):
   """
   handler for success
   """
   h3cStatus.auth_success = 1
-  dhcp_command = "%s %s" % (h3cStatus.dhcp_script, h3cStatus.dev)
-  print ""
-  print "  /---------------------------------------------\ "
-  print " | [^_^] Successfully passed the authentication! |"
-  print "  \---------------------------------------------/ "
-  print ""
-  print " [#] running command: %s to get an IP." % dhcp_command
-  print ""
-  (status, output) = commands.getstatusoutput(dhcp_command)
-  print output
-  print ""
-  print " [!] Every thing is done now, happy surfing the Internet." 
-  print " [!] I will send heart beat packets to keep you online." 
+  callback()
 
-def h3c_unknown_handler(ether):
+def h3c_unknown_handler(ether, callback):
   """
   handler for h3c specific
   """
-  print " [*] Received unknown h3c response from server."
+  callback()
   pass
 
-def failure_handler(ether):
+def failure_handler(ether, callback):
   """
   handler for failed authentication
   """
   h3cStatus.auth_success = 0
-  print " [*] Received authentication failed packet from server."
-  print "     [#] Try to restart the authentication."
-  send_start()
+  callback()
 
-def nothing_handler(ether):
+def nothing_handler(ether, callback):
   """
   handler for others, just let go
   """
+  callback()
   pass
 
 def check_online():
@@ -125,28 +107,84 @@ def check_online():
   """
   pass
 
-def hello_world():
-  print ""
-  print " === PyH3C 0.1.1 ==="
-  print ""
-  print " [*] Activities from server."
-  print " [#] Activities from client." 
-  print " [!] Messages you may want to read."
-  print ""
-  print " ----------------------------------------------"
-  print " [!] This piece of software may not be working"
-  print " [!] as you expected. But if it really works, "
-  print " [!] remember to send me a Thank you letter via"
-  print " [!] qingping.hou@gmail.com."
-  print ""
-  print " [!] OK, I am just kidding. Forget about this."
-  print ""
-  print " [!] Now, let the hunt begin!"
-  print " ----------------------------------------------"
-  print ""
+  
 
 if __name__ == "__main__":
 
+  def hello_world():
+    print """
+  === PyH3C 0.2 ===
+
+  [*] Activities from server.
+  [#] Activities from client."
+  [!] Messages you may want to read.
+
+  ----------------------------------------------
+  [!] This piece of software may not be working
+  [!] as you expected. But if it really works, 
+  [!] remember to send me a Thank you letter via
+  [!] qingping.hou@gmail.com.
+
+  [!] OK, I am just kidding. Forget about this.
+
+  [!] Now, let the hunt begin!
+  ----------------------------------------------
+  """
+
+  def send_start_callback():
+    print " [*] Sent out the authentication request."
+
+  def identity_handler_callback():
+    if h3cStatus.auth_success:
+      print " [*] Received server check online request, sent keepalive packet."
+    else:
+      print " [*] Received identity challenge request."
+      print "     [#] Sent identity challenge response."
+
+  def h3c_unknown_handler_callback():
+    print " [*] Received unknown h3c response from server."
+
+  def allocated_handler_callback():
+    print " [*] Received allocated challenge request."
+    print "     [#] Sent allocated challenge response."
+
+  def success_handler_callback():
+    dhcp_command = "%s %s" % (h3cStatus.dhcp_script, h3cStatus.dev)
+    print ""
+    print "  /---------------------------------------------\ "
+    print " | [^_^] Successfully passed the authentication! |"
+    print "  \---------------------------------------------/ "
+    print ""
+    print " [#] running command: %s to get an IP." % dhcp_command
+    print ""
+    (status, output) = commands.getstatusoutput(dhcp_command)
+    print output
+    print ""
+    print " [!] Every thing is done now, happy surfing the Internet." 
+    print " [!] I will send heart beat packets to keep you online." 
+
+  def failure_handler_callback():
+    print " [*] Received authentication failed packet from server."
+    print "     [#] Try to restart the authentication."
+    send_start()
+
+  def debug_packets():
+      #print 'Ethernet II type:%s' % hex(ether.type)
+      print 'From %s to %s' % tuple( map(binascii.b2a_hex, (ether.src, ether.dst) ))
+      print "%s" % dpkt.hexdump(str(ether), 20)
+      print "==== RADIUS ===="
+      print "radius_len: %d" % radius.len
+      #print "======== EAP_HDR ========"
+      #print "%s" % dpkt.hexdump(str(eap), 20)
+      print "server_response: %s" % response_type[eap.code]
+      print "eap_id: %d" % eap.id
+      print "eap_len: %d" % eap.len
+        #@must handle failure here
+      #print "eap_type: %s" % eap_type[eap.type] 
+      print "======== EAP DATA ========"
+      print "%s" % dpkt.hexdump(eap.data, 20)
+
+  #--- main starts here ---
   if not (getuid() == 0):
     print " [!] You must run with root privilege!"
     exit(0)
@@ -164,24 +202,11 @@ if __name__ == "__main__":
   pc = pcap.pcap(h3cStatus.dev)
   pc.setfilter(filter)
 
-  send_start()
+  send_start(send_start_callback)
 
   for ptime,pdata in pc:
     ether = dpkt.ethernet.Ethernet(pdata)
-#    #print 'Ethernet II type:%s' % hex(ether.type)
-    #print 'From %s to %s' % tuple( map(binascii.b2a_hex, (ether.src, ether.dst) ))
-    #print "%s" % dpkt.hexdump(str(ether), 20)
-    #print "==== RADIUS ===="
-    #print "radius_len: %d" % radius.len
-    ##print "======== EAP_HDR ========"
-    ##print "%s" % dpkt.hexdump(str(eap), 20)
-    #print "server_response: %s" % response_type[eap.code]
-    #print "eap_id: %d" % eap.id
-    #print "eap_len: %d" % eap.len
-      ##@must handle failure here
-    ##print "eap_type: %s" % eap_type[eap.type] 
-    #print "======== EAP DATA ========"
-    #print "%s" % dpkt.hexdump(eap.data, 20)
+    debug_packets()
 
     #ignore Packets sent by myself
     if ether.dst == client_hwadd:
@@ -192,9 +217,11 @@ if __name__ == "__main__":
         handler = "%s_handler" % eap_type[eap.type]
       else:
         handler = "%s_handler" % response_type[eap.code]
-      globals()[handler](ether)
+      hander_callback = "%s_callback" % handler
+      globals()[handler](ether, globals()[hander_callback])
 
   print "\n"
+
 
 
 
