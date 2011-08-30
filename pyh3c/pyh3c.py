@@ -35,7 +35,7 @@ eap_type = {
     0x19:'unknown' 
     }
 
-def send_start(callback):
+def send_start(sender, callback, data=None):
   """
   start the authentication
   """
@@ -48,9 +48,13 @@ def send_start(callback):
       )
   start_packet = pack_ether(client_hwadd, "\xff\xff\xff\xff\xff\xff", start_radius)
   sender.send(str(start_packet))
-  callback()
+  if data:
+    callback(data)
+  else:
+    callback()
+  return 
 
-def identity_handler(ether, callback):
+def identity_handler(ether, sender, callback, data=None):
   """ 
   response user_name to server
   """
@@ -59,9 +63,13 @@ def identity_handler(ether, callback):
   identity_radius = pack_radius(0x01, 0x00, identity_eap)
   identity_packet = pack_ether(client_hwadd, ether.src, identity_radius)
   sender.send(str(identity_packet))
-  callback()
+  if data:
+    callback(data)
+  else:
+    callback()
+  return 
 
-def allocated_handler(ether, callback):
+def allocated_handler(ether, sender, callback, data=None):
   """ 
   response password to server
   """
@@ -71,41 +79,63 @@ def allocated_handler(ether, callback):
   allocated_radius = pack_radius(0x01, 0x00, allocated_eap)
   allocated_packet = pack_ether(client_hwadd, ether.src, allocated_radius)
   sender.send(str(allocated_packet))
-  callback()
+  if data:
+    callback(data)
+  else:
+    callback()
+  return 
 
-def success_handler(ether, callback):
+def success_handler(ether, sender, callback, data=None):
   """
   handler for success
   """
   h3cStatus.auth_success = 1
-  callback()
+  if data:
+    callback(data)
+  else:
+    callback()
+  return 
 
-def h3c_unknown_handler(ether, callback):
+def h3c_unknown_handler(ether, sender, callback, data=None):
   """
   handler for h3c specific
   """
-  callback()
-  pass
+  if data:
+    callback(data)
+  else:
+    callback()
+  return 
 
-def failure_handler(ether, callback):
+def failure_handler(ether, sender, callback, data=None):
   """
   handler for failed authentication
   """
   h3cStatus.auth_success = 0
-  callback()
+  if data:
+    callback(data)
+  else:
+    callback()
+  return 
 
-def nothing_handler(ether, callback):
+def nothing_handler(ether, sender, callback, data=None):
   """
   handler for others, just let go
   """
-  callback()
-  pass
+  if data:
+    callback(data)
+  else:
+    callback()
+  return 
 
 def check_online():
   """
   check to see whether the client is still online.
   """
-  pass
+  if data:
+    callback(data)
+  else:
+    callback()
+  return 
 
   
 
@@ -202,11 +232,11 @@ if __name__ == "__main__":
   pc = pcap.pcap(h3cStatus.dev)
   pc.setfilter(filter)
 
-  send_start(send_start_callback)
+  send_start(sender, send_start_callback)
 
   for ptime,pdata in pc:
     ether = dpkt.ethernet.Ethernet(pdata)
-    debug_packets()
+    #debug_packets()
 
     #ignore Packets sent by myself
     if ether.dst == client_hwadd:
@@ -218,7 +248,7 @@ if __name__ == "__main__":
       else:
         handler = "%s_handler" % response_type[eap.code]
       hander_callback = "%s_callback" % handler
-      globals()[handler](ether, globals()[hander_callback])
+      globals()[handler](ether, sender, globals()[hander_callback])
 
   print "\n"
 
