@@ -1,6 +1,6 @@
 [sys_conf]
 dev = eth0
-dhcp_script = dhclient
+dhcp_command = dhclient
 
 [account]
 user_name = test_name

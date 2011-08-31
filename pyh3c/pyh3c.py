@@ -6,7 +6,9 @@ import dpkt
 import binascii
 import dnet
 import commands
-from os import getuid
+import os 
+import atexit
+import argparse
 
 from h3cRadius import *
 from h3cPack import *
@@ -19,6 +21,7 @@ __maintainer__ = "houqp"
 __email__ = "qingping.hou@gmail.com"
 
 client_hwadd = ""
+lock_file = "/tmp/pyh3c.lock"
 
 response_type = { 
     0x00:'nothing',
@@ -35,7 +38,10 @@ eap_type = {
     0x19:'unknown' 
     }
 
-def send_start(sender, callback, data=None):
+def do_nothing():
+  pass
+
+def send_start(sender, callback=do_nothing, data=None):
   """
   start the authentication
   """
@@ -54,7 +60,7 @@ def send_start(sender, callback, data=None):
     callback()
   return 
 
-def identity_handler(ether, sender, callback, data=None):
+def identity_handler(ether, sender, callback=do_nothing, data=None):
   """ 
   response user_name to server
   """
@@ -69,7 +75,7 @@ def identity_handler(ether, sender, callback, data=None):
     callback()
   return 
 
-def allocated_handler(ether, sender, callback, data=None):
+def allocated_handler(ether, sender, callback=do_nothing, data=None):
   """ 
   response password to server
   """
@@ -85,7 +91,7 @@ def allocated_handler(ether, sender, callback, data=None):
     callback()
   return 
 
-def success_handler(ether, sender, callback, data=None):
+def success_handler(ether, sender, callback=do_nothing, data=None):
   """
   handler for success
   """
@@ -96,7 +102,7 @@ def success_handler(ether, sender, callback, data=None):
     callback()
   return 
 
-def h3c_unknown_handler(ether, sender, callback, data=None):
+def h3c_unknown_handler(ether, sender, callback=do_nothing, data=None):
   """
   handler for h3c specific
   """
@@ -106,7 +112,7 @@ def h3c_unknown_handler(ether, sender, callback, data=None):
     callback()
   return 
 
-def failure_handler(ether, sender, callback, data=None):
+def failure_handler(ether, sender, callback=do_nothing, data=None):
   """
   handler for failed authentication
   """
@@ -117,7 +123,7 @@ def failure_handler(ether, sender, callback, data=None):
     callback()
   return 
 
-def nothing_handler(ether, sender, callback, data=None):
+def nothing_handler(ether, sender, callback=do_nothing, data=None):
   """
   handler for others, just let go
   """
@@ -138,6 +144,55 @@ def check_online():
   return 
 
   
+
+def set_up_lock():
+  try:
+    lock = open(lock_file)
+  except IOError:
+    lock = open(lock_file, 'w')
+    lock.write(str(os.getpid()))
+    lock.close()
+    return 1
+  return 0
+
+def clean_up():
+  os.unlink(lock_file)
+  return
+
+def read_args():
+  desc = "PyH3C - A H3C client written in Python."
+  parser = argparse.ArgumentParser(description=desc)
+
+  class user_action(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+      h3cStatus.user_name = values
+  parser.add_argument('-u', '--user', type=str, \
+      metavar='user_name', dest='user_name', action=user_action, \
+      help="User name for your account.")
+
+  class pass_action(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+      h3cStatus.user_pass = values
+  parser.add_argument('-p', '--pass', type=str, \
+      metavar='password', dest='password', action=pass_action, \
+      help="Password for your account.")
+
+  class dhcp_action(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+      h3cStatus.dhcp_command = values
+  parser.add_argument('-D', '--dhcp', type=str, \
+      metavar='dhcp_command', dest='dhcp_command', action=dhcp_action, \
+      help="DHCP command for acquiring IP after authentication.")
+
+  class dev_action(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+      h3cStatus.dev = values
+  parser.add_argument('-d', '--dev', type=str, \
+      metavar='dev', dest='dev', action=dev_action, \
+      help="Ethernet interface used to connect to the internet.")
+
+  args = parser.parse_args()
+
 
 if __name__ == "__main__":
 
@@ -160,6 +215,11 @@ if __name__ == "__main__":
   [!] Now, let the hunt begin!
   ----------------------------------------------
   """
+    print " [!] Using user name: %s" % h3cStatus.user_name
+    print " [!] Using interface: %s" % h3cStatus.dev
+    print " [!] Using DHCP script: %s" % h3cStatus.dhcp_command
+    print ""
+    return 
 
   def send_start_callback():
     print " [*] Sent out the authentication request."
@@ -179,7 +239,7 @@ if __name__ == "__main__":
     print "     [#] Sent allocated challenge response."
 
   def success_handler_callback():
-    dhcp_command = "%s %s" % (h3cStatus.dhcp_script, h3cStatus.dev)
+    dhcp_command = "%s %s" % (h3cStatus.dhcp_command, h3cStatus.dev)
     print ""
     print "  /---------------------------------------------\ "
     print " | [^_^] Successfully passed the authentication! |"
@@ -214,13 +274,24 @@ if __name__ == "__main__":
       print "======== EAP DATA ========"
       print "%s" % dpkt.hexdump(eap.data, 20)
 
-  #--- main starts here ---
-  if not (getuid() == 0):
+  #--- main() starts here ---
+
+  #for initializing
+  if not (os.getuid() == 0):
     print " [!] You must run with root privilege!"
-    exit(0)
+    exit(-1)
+
+  if not set_up_lock():
+    print " [!] Only one PyH3C can be ran at the same time!"
+    exit(-1)
+  atexit.register(clean_up)
+
+  h3cStatus.load_config()
+
+  read_args()
 
   hello_world()
-  h3cStatus.load_config()
+  #endof initializing
 
   sender = dnet.eth(h3cStatus.dev)
   client_hwadd = sender.get()

@@ -25,14 +25,13 @@ Sorry for coming along with lots of dependencies. :-(
 Usage
 -----
 
-Currently, no command line arguments are supported.
-So the only choice you have is using configuration file.
-
-Please checkout pyh3c.conf.example for examples.
+It is recommended to use configuration file for setup. Please checkout pyh3c.conf.example for examples.
 
 You must run the program with root previliege:
 
     sudo python pyh3c.py
+
+If you want to use command line arguments to setup PyH3C, check out -h argument for more information.
 
 
 Contributing

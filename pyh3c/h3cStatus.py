@@ -24,7 +24,10 @@ def load_config():
     print " [!] Open configuration file failed!"
     exit(0)
   globals()['dev'] = parser.get('sys_conf', 'dev')
-  globals()['dhcp_script'] = parser.get('sys_conf', 'dhcp_script')
+  try:
+    globals()['dhcp_command'] = parser.get('sys_conf', 'dhcp_script')
+  except ConfigParser.NoOptionError:
+    globals()['dhcp_command'] = parser.get('sys_conf', 'dhcp_command')
   globals()['user_name'] = parser.get('account', 'user_name')
   globals()['user_pass'] = parser.get('account', 'user_pass')
 
