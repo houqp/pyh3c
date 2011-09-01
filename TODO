@@ -6,10 +6,6 @@ fix the dumbnet library
 
 finish the check_online() function
 
-finish configuration create functions
-    let the user set up configuration if
-    no configuration file is found.
-
 display the message sent from the server
 
 add a GUI frontend
@@ -17,3 +13,4 @@ add a GUI frontend
 add plugin funtions
     write a plugin for paliba
 
+check update when passed the authentication
