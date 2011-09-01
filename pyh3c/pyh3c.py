@@ -13,6 +13,7 @@ import argparse
 from h3cRadius import *
 from h3cPack import *
 import h3cStatus
+import plugins
 
 __author__ = "houqp"
 __license__ = "GPL"
@@ -22,6 +23,8 @@ __email__ = "qingping.hou@gmail.com"
 
 client_hwadd = ""
 lock_file = "/tmp/pyh3c.lock"
+plugins_to_load = ['keepalive']
+plugins_loaded = []
 
 response_type = { 
     0x00:'nothing',
@@ -96,10 +99,16 @@ def success_handler(ether, sender, callback=do_nothing, data=None):
   handler for success
   """
   h3cStatus.auth_success = 1
+
   if data:
     callback(data)
   else:
     callback()
+
+  #call after_auth_succ functions registered by plugins
+  for plugin in plugins_loaded:
+    getattr(plugin, 'after_auth_succ')(ha3cStatus)
+
   return 
 
 def h3c_unknown_handler(ether, sender, callback=do_nothing, data=None):
@@ -121,6 +130,11 @@ def failure_handler(ether, sender, callback=do_nothing, data=None):
     callback(data)
   else:
     callback()
+
+  #call after_auth_succ functions registered by plugins
+  for plugin in plugins_loaded:
+    getattr(plugin, 'after_auth_fail')(h3cStatus)
+
   return 
 
 def nothing_handler(ether, sender, callback=do_nothing, data=None):
@@ -133,17 +147,7 @@ def nothing_handler(ether, sender, callback=do_nothing, data=None):
     callback()
   return 
 
-def check_online():
-  """
-  check to see whether the client is still online.
-  """
-  if data:
-    callback(data)
-  else:
-    callback()
-  return 
-
-  
+ 
 
 def set_up_lock():
   try:
@@ -192,6 +196,14 @@ def read_args():
       help="Ethernet interface used to connect to the internet.")
 
   args = parser.parse_args()
+  return 
+
+def load_plugins():
+  for p_item in plugins_to_load:
+    try:
+      plugins_loaded.append(getattr(plugins, p_item))
+    except AttributeError:
+      print " [!] Failed while loading plugin %s." % p_item
 
 
 if __name__ == "__main__":
@@ -286,11 +298,14 @@ if __name__ == "__main__":
   atexit.register(clean_up)
 
   h3cStatus.load_config()
-
   read_args()
-
+  load_plugins()
   hello_world()
   #endof initializing
+
+  #call before_auth functions registered by plugins
+  for plugin in plugins_loaded:
+    getattr(plugin, 'before_auth')(ha3cStatus)
 
   sender = dnet.eth(h3cStatus.dev)
   client_hwadd = sender.get()

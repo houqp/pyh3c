@@ -9,11 +9,15 @@ __license__ = "GPL"
 __version__ = "0.2"
 __maintainer__ = "houqp"
 __email__ = "qingping.hou@gmail.com"
+
+
 dev = ""
 user_name = ""
 user_pass = ""
 dhcp_command = ""
 auth_success = 0
+ping_target = ""
+ping_interval = 1
 
 def load_config():
   """
@@ -59,6 +63,12 @@ def load_config():
     globals()['user_pass'] = ""
     create_config()
 
+  try:
+    globals()['ping_target'] = parser.get('sys_conf', 'ping_target')
+  except ConfigParser.NoOptionError:
+    globals()['ping_target'] = ""
+    create_config()
+
   return
 
 def create_config():
@@ -89,6 +99,10 @@ def create_config():
   if not dhcp_command:
     globals()['dhcp_command'] = raw_input('Please input the command you use to acquire ip with DHCP: ')
   
+  if not ping_target:
+    print "To disable online status checking, just type \"none\"."
+    globals()['ping_target'] = raw_input('Please input the target ip you want to ping for online checking: ')
+
   save_config()
   return 
 
@@ -112,6 +126,7 @@ def save_config(parser=None, fp=None):
 
   parser.set('sys_conf', 'dev', dev)
   parser.set('sys_conf', 'dhcp_command', dhcp_command)
+  parser.set('sys_conf', 'ping_target', ping_target)
   parser.set('account', 'user_name', user_name)
   parser.set('account', 'user_pass', user_pass)
   
