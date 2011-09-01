@@ -3,8 +3,8 @@
 
 import pcap
 import dpkt
-import binascii
 import dnet
+import binascii
 import commands
 import os 
 import atexit
@@ -16,7 +16,7 @@ import h3cStatus
 
 __author__ = "houqp"
 __license__ = "GPL"
-__version__ = "0.2.0"
+__version__ = "0.3"
 __maintainer__ = "houqp"
 __email__ = "qingping.hou@gmail.com"
 
@@ -197,24 +197,23 @@ def read_args():
 if __name__ == "__main__":
 
   def hello_world():
-    print """
-  === PyH3C 0.2 ===
-
-  [*] Activities from server.
-  [#] Activities from client."
-  [!] Messages you may want to read.
-
-  ----------------------------------------------
-  [!] This piece of software may not be working
-  [!] as you expected. But if it really works, 
-  [!] remember to send me a Thank you letter via
-  [!] qingping.hou@gmail.com.
-
-  [!] OK, I am just kidding. Forget about this.
-
-  [!] Now, let the hunt begin!
-  ----------------------------------------------
-  """
+    print ""
+    print " === PyH3C %s ===" % __version__
+    print " [*] Activities from server."
+    print " [#] Activities from client."
+    print " [!] Messages you may want to read."
+    print ""
+    print " ----------------------------------------------"
+    print " [!] This piece of software may not be working"
+    print " [!] as you expected. But if it really works, "
+    print " [!] remember to send me a Thank you letter via"
+    print " [!] qingping.hou@gmail.com."
+    print ""
+    print " [!] OK, I am just kidding. Forget about this."
+    print ""
+    print " [!] Now, let the hunt begin!"
+    print " ----------------------------------------------"
+    print ""
     print " [!] Using user name: %s" % h3cStatus.user_name
     print " [!] Using interface: %s" % h3cStatus.dev
     print " [!] Using DHCP script: %s" % h3cStatus.dhcp_command

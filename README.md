@@ -7,6 +7,8 @@ PyH3C is a program for passing h3c authentication in SYSU east campus.
 Installation
 -------
 
+Currently, python3 is not supported.
+
 You need to install dpkt, libdnet and pypcap python library before you run the program.
 
 So for Ubuntu users:

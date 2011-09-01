@@ -1,3 +1,5 @@
+add encryption for password in configuration file
+
 fix the dumbnet library
 
 100% simulate the hearbeat packet from win32 h3c client
@@ -11,8 +13,6 @@ finish configuration create functions
 display the message sent from the server
 
 add a GUI frontend
-
-add command line options
 
 add plugin funtions
     write a plugin for paliba
