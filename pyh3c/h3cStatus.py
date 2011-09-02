@@ -6,7 +6,7 @@ import dnet
 
 __author__ = "houqp"
 __license__ = "GPL"
-__version__ = "0.2"
+__version__ = "0.3"
 __maintainer__ = "houqp"
 __email__ = "qingping.hou@gmail.com"
 
