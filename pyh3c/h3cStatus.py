@@ -6,10 +6,9 @@ import dnet
 
 __author__ = "houqp"
 __license__ = "GPL"
-__version__ = "0.3"
+__version__ = "0.3.1"
 __maintainer__ = "houqp"
 __email__ = "qingping.hou@gmail.com"
-
 
 class H3C_STATUS():
   def __init__(self):
@@ -18,10 +17,13 @@ class H3C_STATUS():
     self.user_name = ""
     self.user_pass = ""
     self.dhcp_command = ""
-    self.ping_target = ""
-    self.ping_interval = 1
     self.plugins = []
     self.plugins_to_load = ['keepalive']
+    # start keepalive plugin
+    self.ping_target = "www.baidu.com"
+    self.ping_interval = 1
+    self.ping_tolerence = 3
+    # endof keepalive plugin
 
     self.auth_success = 0
     self.parser = ConfigParser.SafeConfigParser()
@@ -79,19 +81,21 @@ class H3C_STATUS():
 
     try:
       self.new_plugins = self.parser.get('sys_conf', 'plugins')
-      self.plugins_to_load.extend( \
-          self.new_plugins.replace(' ','').split(',') \
-      )
-      print self.plugins_to_load
+      if self.new_plugins:
+        self.plugins_to_load.extend( \
+            self.new_plugins.replace(' ','').split(',') \
+        )
     except ConfigParser.NoOptionError:
       pass
+
+    # some plugins may not be loaded into self.plugins because they was not found under plugins directory.
     self.plugins = __import__('plugins', globals(), locals(), self.plugins_to_load)
 
     return 
 
   def create_config(self):
     """
-    create a configuration file and write to disk
+    create or complete a configuration file and write to disk
     """
     if not self.dev:
       intf = dnet.intf()

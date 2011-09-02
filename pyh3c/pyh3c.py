@@ -17,7 +17,7 @@ import plugins
 
 __author__ = "houqp"
 __license__ = "GPL"
-__version__ = "0.4"
+__version__ = "0.4.1"
 __maintainer__ = "houqp"
 __email__ = "qingping.hou@gmail.com"
 
@@ -45,6 +45,9 @@ class PyH3C:
     self.lock_file = "/tmp/pyh3c.lock"
 
   def do_nothing(self):
+    """
+    Method that do nothing.
+    """
     pass
 
   def send_start(self, callback=do_nothing, data=None):
@@ -59,6 +62,11 @@ class PyH3C:
           data = '\x00'
         )
     start_packet = pack_ether(self.h3cStatus.hwadd, "\xff\xff\xff\xff\xff\xff", start_radius)
+
+    #call before_auth functions registered by plugins
+    for plugin in self.plugins_loaded:
+      getattr(plugin, 'before_auth')(self)
+
     self.sender.send(str(start_packet))
     if data:
       callback(data)
@@ -137,17 +145,24 @@ class PyH3C:
     #call after_auth_succ functions registered by plugins
     for plugin in self.plugins_loaded:
       getattr(plugin, 'after_auth_fail')(self)
+
     return 
 
-  def nothing_handler(self, ether, callback=do_nothing, data=None):
+  def wtf_handler(self, ether, callback=do_nothing, data=None):
     """
-    handler for others, just let go
+    What the fuck handler for packets that I've never seen before.
     """
-    if data:
-      callback(data)
-    else:
-      callback()
-    return 
+    print " [!] Encountered an unknown packet!"
+    print " [!] ----------------------------------------"
+    print ""
+    callback(ether, data)
+    print ""
+    print " * It may be sent from some aliens, please help improve"
+    print "   software by fire a bug report at:"
+    print "   https://github.com/houqp/pyh3c/issues"
+    print "   Also remember to paste the above output in your report."
+    print " [!] ----------------------------------------"
+    return
 
   def set_up_lock(self):
     """
@@ -204,12 +219,17 @@ class PyH3C:
     return 
 
   def load_plugins(self):
+    """
+    Load plugins according to pyh3c.conf
+    """
     for p_item in self.h3cStatus.plugins_to_load:
-      print dir(self.h3cStatus.plugins)
       try:
         self.plugins_loaded.append(getattr(self.h3cStatus.plugins, p_item))
       except AttributeError:
         print " [!] Failed while loading plugin %s." % p_item
+      else:
+        print " [!] Plugin [ %s ] loaded." % p_item
+
     return
 
   def main(self):
@@ -238,6 +258,15 @@ class PyH3C:
       print ""
       return 
 
+    def do_dhcp():
+      #@TODO: check operating system here
+      dhcp_command = "%s %s" % (self.h3cStatus.dhcp_command, self.h3cStatus.dev)
+      (status, output) = commands.getstatusoutput(dhcp_command)
+      print ""
+      print output
+      print ""
+      return
+
     def send_start_callback():
       print " [*] Sent out the authentication request."
 
@@ -256,17 +285,13 @@ class PyH3C:
       print "     [#] Sent allocated challenge response."
 
     def success_handler_callback():
-      dhcp_command = "%s %s" % (self.h3cStatus.dhcp_command, self.h3cStatus.dev)
       print ""
       print "  /---------------------------------------------\ "
       print " | [^_^] Successfully passed the authentication! |"
       print "  \---------------------------------------------/ "
       print ""
       print " [#] running command: %s to get an IP." % dhcp_command
-      print ""
-      (status, output) = commands.getstatusoutput(dhcp_command)
-      print output
-      print ""
+      do_dhcp()
       print " [!] Every thing is done now, happy surfing the Internet." 
       print " [!] I will send heart beat packets to keep you online." 
 
@@ -275,7 +300,7 @@ class PyH3C:
       print "     [#] Try to restart the authentication."
       self.send_start()
 
-    def debug_packets(ether):
+    def debug_packets(ether,eap):
         #print 'Ethernet II type:%s' % hex(ether.type)
         print 'From %s to %s' % tuple( map(binascii.b2a_hex, (ether.src, ether.dst) ))
         print "%s" % dpkt.hexdump(str(ether), 20)
@@ -305,13 +330,9 @@ class PyH3C:
 
     self.h3cStatus.load_config()
     self.read_args()
-    self.load_plugins()
     hello_world()
+    self.load_plugins()
     #endof initializing
-
-    #call before_auth functions registered by plugins
-    for plugin in self.plugins_loaded:
-      getattr(plugin, 'before_auth')(self)
 
     self.sender = dnet.eth(self.h3cStatus.dev)
     self.h3cStatus.hwadd = self.sender.get()
@@ -327,21 +348,33 @@ class PyH3C:
 
     for ptime,pdata in pc:
       ether = dpkt.ethernet.Ethernet(pdata)
-      #debug_packets(ether)
 
       #ignore Packets sent by myself
       if ether.dst == self.h3cStatus.hwadd:
         radius = RADIUS_H3C(ether.data)
         eap = RADIUS_H3C.EAP(radius.data)
+        #debug_packets(ether, eap)
 
         if response_type[eap.code] == 'request':
-          handler = "%s_handler" % eap_type[eap.type]
+          try:
+            handler = "%s_handler" % eap_type[eap.type]
+          except KeyError:
+            handler = "wtf_handler"
+            self.wtf_handler(ether, debug_packets, eap)
+            continue
         else:
-          handler = "%s_handler" % response_type[eap.code]
+          try:
+            handler = "%s_handler" % response_type[eap.code]
+          except KeyError:
+            handler = "wtf_handler"
+            self.wtf_handler(ether, debug_packets, eap)
+            continue
+
+        #known packet will be handle here
         hander_callback = "%s_callback" % handler
         getattr(self,handler)(ether, locals()[hander_callback])
 
-    print "\n"
+    print " [!] PyH3C exits!"
     return
 
 

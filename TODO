@@ -4,13 +4,10 @@ fix the dumbnet library
 
 100% simulate the hearbeat packet from win32 h3c client
 
-finish the check_online() function
-
 display the message sent from the server
 
 add a GUI frontend
 
-add plugin funtions
-    write a plugin for paliba
+write a plugin for paliba
 
-check update when passed the authentication
+check update when passed the authentication (as plugin)

@@ -1,6 +1,8 @@
 [sys_conf]
 dev = eth0
 dhcp_command = dhclient
+ping_target = g.cn
+plugins =
 
 [account]
 user_name = test_name

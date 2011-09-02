@@ -5,33 +5,46 @@ import commands
 import threading
 from time import sleep
 
-def watcher(pyh3c, command):
+__author__ = "houqp"
+__license__ = "GPL"
+__version__ = "0.5"
+__maintainer__ = "houqp"
+__email__ = "qingping.hou@gmail.com"
+
+
+def watcher(pyh3c):
   dissconn_count = 0
+  check_command = 'ping -c 1 -n %s' % pyh3c.h3cStatus.ping_target
+
   def restart_auth():
     print " [!] Disconnected! Now restart authentication ..."
+
   while True:
-    sleep(ping_interval)
-    (status, output) = commands.getstatusoutput(command)
+    sleep(pyh3c.h3cStatus.ping_interval)
+    (status, output) = commands.getstatusoutput(check_command)
     if status != 0:
       dissconn_count += 1
-      if dissconn_count >= h3cStatus.ping_tolerence:
-        pyh3c.start_packet(restart_auth)
-        dissconn_count = 0
+      if dissconn_count >= pyh3c.h3cStatus.ping_tolerence:
+        pyh3c.send_start(restart_auth)
+        break
+        #dissconn_count = 0
         #wait some time for reauth
-        sleep(ping_interval)
+        #sleep(pyh3c.h3cStatus.ping_interval)
     else:
       dissconn_count = 0
   return
-
 
 def check_online(pyh3c):
   """
   check to see whether the client is still online.
   """
-  check_command = 'ping -c 1 -n %s' % h3cStatus.ping_target
   #spwan watcher here
+  t = threading.Thread(group=None, target=watcher, name='watcher', args=(pyh3c,), kwargs={})
+  t.daemon = True
+  t.start()
   return 
- 
+
+
 def before_auth(pyh3c):
   pass
 
