@@ -13,15 +13,15 @@ You need to install dpkt, libdnet and pypcap python library before you run the p
 
 So for Ubuntu users:
 
-    apt-get install python-pypcap python-dpkt python-dumbnet
+    apt-get install python-pypcap python-dpkt python-dumbnet python-argparse
 
 For Gentoo users:
 
-    emerge pypcap dpkt libdnet
+    emerge pypcap dpkt libdnet argparse
 
 When you emerge libdnet, remember to have python use flag turn on (It's turned on by default).
 
-Sorry for coming along with lots of dependencies. :-(
+Sorry for coming along with lots of dependencies. :-( I will clean this up when I have time.
 
 
 Usage

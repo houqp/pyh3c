@@ -2,7 +2,6 @@
 #!/usr/bin/env python
 
 import ConfigParser
-import dnet
 
 __author__ = "houqp"
 __license__ = "GPL"
@@ -117,7 +116,11 @@ class H3C_STATUS():
     create or complete a configuration file and write to disk
     """
     if not self.dev:
-      intf = dnet.intf()
+      try:
+        libdnet = __import__('dnet')
+      except ImportError:
+        libdnet = __import__('dumbnet')
+      intf = libdnet.intf()
       def print_dev(dict, arg):
         if not dict['name'] == 'lo':
           print " * %s" % dict['name']
