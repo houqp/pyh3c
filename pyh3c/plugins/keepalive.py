@@ -7,12 +7,16 @@ from time import sleep
 
 __author__ = "houqp"
 __license__ = "GPL"
-__version__ = "0.5"
+__version__ = "0.6"
 __maintainer__ = "houqp"
 __email__ = "qingping.hou@gmail.com"
 
 
+keepalive_lock = 0
+
 def watcher(pyh3c):
+  global keepalive_lock 
+  keepalive_lock = 1
   dissconn_count = 0
   check_command = 'ping -c 1 -n %s' % pyh3c.h3cStatus.ping_target
 
@@ -26,10 +30,9 @@ def watcher(pyh3c):
       dissconn_count += 1
       if dissconn_count >= pyh3c.h3cStatus.ping_tolerence:
         pyh3c.send_start(restart_auth)
-        break
-        #dissconn_count = 0
+        dissconn_count = 0
         #wait some time for reauth
-        #sleep(pyh3c.h3cStatus.ping_interval)
+        sleep(pyh3c.h3cStatus.ping_interval)
     else:
       dissconn_count = 0
   return
@@ -49,7 +52,7 @@ def before_auth(pyh3c):
   pass
 
 def after_auth_succ(pyh3c):
-  if pyh3c.h3cStatus.ping_target == 'none':
+  if keepalive_lock or pyh3c.h3cStatus.ping_target == 'none':
     return
   check_online(pyh3c)
   return 

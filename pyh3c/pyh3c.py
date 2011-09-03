@@ -9,6 +9,7 @@ import commands
 import os 
 import atexit
 import argparse
+from time import sleep
 
 from h3cRadius import *
 from h3cPack import *
@@ -44,7 +45,7 @@ class PyH3C:
     self.plugins_loaded = []
     self.lock_file = "/tmp/pyh3c.lock"
 
-  def do_nothing(self):
+  def do_nothing():
     """
     Method that do nothing.
     """
@@ -297,8 +298,9 @@ class PyH3C:
 
     def failure_handler_callback():
       print " [*] Received authentication failed packet from server."
-      print "     [#] Try to restart the authentication."
-      self.send_start()
+      print "     [#] Try to restart the authentication in one second."
+      sleep(1)
+      self.send_start(send_start_callback)
 
     def debug_packets(ether,eap):
         #print 'Ethernet II type:%s' % hex(ether.type)
