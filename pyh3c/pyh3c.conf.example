@@ -9,11 +9,11 @@ dhcp_command = dhclient
 #
 # you can use domain here, but ip is recommended
 #
-ping_target = 121.195.178.238
+ping_target = 183.60.136.64
 #
-# Interval between each ping, in seconds. Default to 1
+# Interval between each ping, in seconds. Default to 2
 #
-#ping_interval = 1
+#ping_interval = 2
 #
 # Maximun failure ping time. Default to 3
 #

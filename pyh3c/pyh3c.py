@@ -40,6 +40,7 @@ eap_type = {
     }
 
 error_code = {
+    '\x00\x00\x00\x00\x00\x00':'Authentication failed',
     'E63034':'Wrong password',
     'E63035':'Wrong password',
     'E63036':'Unknown user name'
@@ -304,13 +305,12 @@ class PyH3C:
       radius = RADIUS_H3C(ether.data)
       eap = RADIUS_H3C.EAP(radius.data)
       error = eap.data[1:7]
-      if error:
-        try:
-          print " [*] Error code: %s, %s" % (error, error_code[error])
-        except KeyError:
-          print " [*] Error code: %s, %s" % (error, "Unknown error code!")
-          print "     Please fire a bug report at:"
-          print "     https://github.com/houqp/pyh3c/issues"
+      try:
+        print " [*] Error code: \"%s\", %s" % (error, error_code[error])
+      except KeyError:
+        print " [*] Error code: \"%s\", %s" % (binascii.b2a_hex(error), "Unknown error code!")
+        print "     Please fire a bug report at:"
+        print "     https://github.com/houqp/pyh3c/issues"
       print "     [#] Try to restart the authentication in one second."
       sleep(1)
       self.send_start(send_start_callback)

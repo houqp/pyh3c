@@ -21,7 +21,7 @@ class H3C_STATUS():
     self.plugins_to_load = ['keepalive']
     # start keepalive plugin
     self.ping_target = "8.8.8.8"
-    self.ping_interval = 1
+    self.ping_interval = 2
     #maxium ping failure time
     self.ping_tolerence = 3
     #time to wait after reauth because dhcp may take quite a long time
