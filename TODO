@@ -1,10 +1,6 @@
 add ipv6 support 
 
-check type of failure packets
-
 add encryption for password in configuration file
-
-fix the dumbnet library
 
 100% simulate the hearbeat packet from win32 h3c client
 
@@ -15,3 +11,5 @@ add a GUI frontend
 write a plugin for paliba
 
 check update when passed the authentication (as plugin)
+
+fix the dumbnet library

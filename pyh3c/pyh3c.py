@@ -18,7 +18,7 @@ import plugins
 
 __author__ = "houqp"
 __license__ = "GPL"
-__version__ = "0.4.1"
+__version__ = "0.5"
 __maintainer__ = "houqp"
 __email__ = "qingping.hou@gmail.com"
 
@@ -37,6 +37,12 @@ eap_type = {
     0x01:'identity', 
     0x07:'allocated', 
     0x19:'unknown' 
+    }
+
+error_code = {
+    'E63034':'Wrong password',
+    'E63035':'Wrong password',
+    'E63036':'Unknown user name'
     }
 
 class PyH3C:
@@ -85,9 +91,9 @@ class PyH3C:
     identity_packet = pack_ether(self.h3cStatus.hwadd, ether.src, identity_radius)
     self.sender.send(str(identity_packet))
     if data:
-      callback(data)
+      callback(ether, data)
     else:
-      callback()
+      callback(ether)
     return 
 
   def allocated_handler(self, ether, callback=do_nothing, data=None):
@@ -101,9 +107,9 @@ class PyH3C:
     allocated_packet = pack_ether(self.h3cStatus.hwadd, ether.src, allocated_radius)
     self.sender.send(str(allocated_packet))
     if data:
-      callback(data)
+      callback(ether, data)
     else:
-      callback()
+      callback(ether)
     return 
 
   def success_handler(self, ether, callback=do_nothing, data=None):
@@ -113,9 +119,9 @@ class PyH3C:
     self.h3cStatus.auth_success = 1
 
     if data:
-      callback(data)
+      callback(ether, data)
     else:
-      callback()
+      callback(ether)
 
     #call after_auth_succ functions registered by plugins
     for plugin in self.plugins_loaded:
@@ -128,9 +134,9 @@ class PyH3C:
     handler for h3c specific
     """
     if data:
-      callback(data)
+      callback(ether, data)
     else:
-      callback()
+      callback(ether)
     return 
 
   def failure_handler(self, ether, callback=do_nothing, data=None):
@@ -139,9 +145,9 @@ class PyH3C:
     """
     self.h3cStatus.auth_success = 0
     if data:
-      callback(data)
+      callback(ether, data)
     else:
-      callback()
+      callback(ether)
 
     #call after_auth_succ functions registered by plugins
     for plugin in self.plugins_loaded:
@@ -167,7 +173,7 @@ class PyH3C:
 
   def set_up_lock(self):
     """
-    Setup lock file in /tmp/pyh3c.lock inwhich pid is written 
+    Setup lock file in /tmp/pyh3c.lock in which pid is written 
     """
     try:
       lock = open(self.lock_file)
@@ -268,21 +274,21 @@ class PyH3C:
     def send_start_callback():
       print " [*] Sent out the authentication request."
 
-    def identity_handler_callback():
+    def identity_handler_callback(ether):
       if self.h3cStatus.auth_success:
         print " [*] Received server check online request, sent response packet."
       else:
         print " [*] Received identity challenge request."
         print "     [#] Sent identity challenge response."
 
-    def h3c_unknown_handler_callback():
+    def h3c_unknown_handler_callback(ether):
       print " [*] Received unknown h3c response from server."
 
-    def allocated_handler_callback():
+    def allocated_handler_callback(ether):
       print " [*] Received allocated challenge request."
       print "     [#] Sent allocated challenge response."
 
-    def success_handler_callback():
+    def success_handler_callback(ether):
       print ""
       print "  /---------------------------------------------\ "
       print " | [^_^] Successfully passed the authentication! |"
@@ -292,8 +298,19 @@ class PyH3C:
       print " [!] Every thing is done now, happy surfing the Internet." 
       print " [!] I will send heart beat packets to keep you online." 
 
-    def failure_handler_callback():
+    def failure_handler_callback(ether):
       print " [*] Received authentication failed packet from server."
+
+      radius = RADIUS_H3C(ether.data)
+      eap = RADIUS_H3C.EAP(radius.data)
+      error = eap.data[1:7]
+      try:
+        print " [*] Error code: %s, %s" % (error, error_code[error])
+      except KeyError:
+        print " [*] Error code: %s, %s" % (error, "Unknown error code!")
+        print "     Please fire a bug report at:"
+        print "     https://github.com/houqp/pyh3c/issues"
+
       print "     [#] Try to restart the authentication in one second."
       sleep(1)
       self.send_start(send_start_callback)
@@ -317,7 +334,7 @@ class PyH3C:
         #print "eap_type: %s" % eap_type[eap.type] 
         print "======== EAP DATA ========"
         print "%s" % dpkt.hexdump(eap.data, 20)
-        print "# Endof dump content #"
+        print "# End of dump content #"
         print ""
 
     #--- main() starts here ---
@@ -336,7 +353,7 @@ class PyH3C:
     self.read_args()
     hello_world()
     self.load_plugins()
-    #endof initializing
+    #end of initializing
 
     try:
       libdnet = __import__('dnet')

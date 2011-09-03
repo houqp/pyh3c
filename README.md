@@ -9,7 +9,7 @@ Currently, python 3 is not supported. Also Windows operating system is not suppo
 Installation
 -------
 
-You need to install dpkt, libdnet and pypcap python library before you run the program.
+You need to install dpkt, libdnet argparse and pypcap python library before you run the program.
 
 So for Ubuntu users:
 
@@ -34,6 +34,7 @@ You must run the program with root privilege:
     sudo python pyh3c.py
 
 If you want to use command line arguments to setup PyH3C, check out -h argument for more information.
+
 
 Plugins
 -------
