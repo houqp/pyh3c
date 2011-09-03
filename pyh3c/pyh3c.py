@@ -304,13 +304,13 @@ class PyH3C:
       radius = RADIUS_H3C(ether.data)
       eap = RADIUS_H3C.EAP(radius.data)
       error = eap.data[1:7]
-      try:
-        print " [*] Error code: %s, %s" % (error, error_code[error])
-      except KeyError:
-        print " [*] Error code: %s, %s" % (error, "Unknown error code!")
-        print "     Please fire a bug report at:"
-        print "     https://github.com/houqp/pyh3c/issues"
-
+      if error:
+        try:
+          print " [*] Error code: %s, %s" % (error, error_code[error])
+        except KeyError:
+          print " [*] Error code: %s, %s" % (error, "Unknown error code!")
+          print "     Please fire a bug report at:"
+          print "     https://github.com/houqp/pyh3c/issues"
       print "     [#] Try to restart the authentication in one second."
       sleep(1)
       self.send_start(send_start_callback)

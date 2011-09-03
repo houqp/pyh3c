@@ -19,7 +19,7 @@ For Gentoo users:
 
     emerge pypcap dpkt libdnet argparse
 
-When you emerge libdnet, remember to have python use flag turn on (It's turned on by default).
+When you emerge libdnet, remember to have python use flag turned on (It's turned on by default).
 
 Sorry for coming along with lots of dependencies. :-( I will clean this up when I have time.
 
