@@ -106,7 +106,7 @@ class PyH3C:
       callback()
     return 
 
-  def success_handler(ether, callback=do_nothing, data=None):
+  def success_handler(self, ether, callback=do_nothing, data=None):
     """
     handler for success
     """
@@ -259,6 +259,7 @@ class PyH3C:
       #@TODO: check operating system here
       dhcp_command = "%s %s" % (self.h3cStatus.dhcp_command, self.h3cStatus.dev)
       (status, output) = commands.getstatusoutput(dhcp_command)
+      print " [#] running command: %s to get an IP." % dhcp_command
       print ""
       print output
       print ""
@@ -287,7 +288,6 @@ class PyH3C:
       print " | [^_^] Successfully passed the authentication! |"
       print "  \---------------------------------------------/ "
       print ""
-      print " [#] running command: %s to get an IP." % dhcp_command
       do_dhcp()
       print " [!] Every thing is done now, happy surfing the Internet." 
       print " [!] I will send heart beat packets to keep you online." 
