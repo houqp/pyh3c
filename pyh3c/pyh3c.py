@@ -197,7 +197,7 @@ class PyH3C:
         help="User name for your account.")
 
     parser.add_argument('-p', '--pass', type=str, \
-        metavar='password', dest='password', action='store', \
+        metavar='password', dest='user_pass', action='store', \
         help="Password for your account.")
 
     parser.add_argument('-D', '--dhcp', type=str, \
