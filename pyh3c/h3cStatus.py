@@ -17,6 +17,7 @@ class H3C_STATUS():
     self.user_name = ""
     self.user_pass = ""
     self.dhcp_command = ""
+    self.debug_on = False
     self.plugins = []
     self.plugins_to_load = ['keepalive']
     # start keepalive plugin

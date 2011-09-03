@@ -192,31 +192,27 @@ class PyH3C:
     desc = "PyH3C - A H3C client written in Python."
     parser = argparse.ArgumentParser(description=desc)
 
-    class set_dest(argparse.Action):
-      def __call__(self, parser, namespace, values, option_string=None):
-        self.dest = values
-
     parser.add_argument('-u', '--user', type=str, \
-        metavar='user_name', \
-        dest='self.h3cStatus.user_name', action=set_dest, \
+        metavar='user_name', dest='user_name', action='store', \
         help="User name for your account.")
 
     parser.add_argument('-p', '--pass', type=str, \
-        metavar='password', \
-        dest='self.h3cStatus.password', action=set_dest, \
+        metavar='password', dest='password', action='store', \
         help="Password for your account.")
 
     parser.add_argument('-D', '--dhcp', type=str, \
-        metavar='dhcp_command', \
-        dest='self.h3cStatus.dhcp_command', action=set_dest, \
+        metavar='dhcp_command', dest='dhcp_command', action='store', \
         help="DHCP command for acquiring IP after authentication.")
 
     parser.add_argument('-d', '--dev', type=str, \
-        metavar='dev', \
-        dest='self.h3cStatus.dev', action=set_dest, \
+        metavar='dev', dest='dev', action='store', \
         help="Ethernet interface used to connect to the internet.")
 
-    args = parser.parse_args()
+    parser.add_argument('-g', '--debug', \
+        dest='debug_on', action='store_true', \
+        help="Turn on debug to see dump content.")
+
+    args = parser.parse_args(namespace=self.h3cStatus)
     return 
 
   def load_plugins(self):
@@ -304,19 +300,24 @@ class PyH3C:
 
     def debug_packets(ether,eap):
         #print 'Ethernet II type:%s' % hex(ether.type)
+        print ""
+        print "# Start of dump content #"
         print 'From %s to %s' % tuple( map(binascii.b2a_hex, (ether.src, ether.dst) ))
         print "%s" % dpkt.hexdump(str(ether), 20)
         print "==== RADIUS ===="
         print "radius_len: %d" % radius.len
         #print "======== EAP_HDR ========"
         #print "%s" % dpkt.hexdump(str(eap), 20)
-        print "server_response: %s" % response_type[eap.code]
+        #print "server_response: %s" % response_type[eap.code]
+        print "eap_code: %d" % eap.code
         print "eap_id: %d" % eap.id
         print "eap_len: %d" % eap.len
           #@must handle failure here
         #print "eap_type: %s" % eap_type[eap.type] 
         print "======== EAP DATA ========"
         print "%s" % dpkt.hexdump(eap.data, 20)
+        print "# Endof dump content #"
+        print ""
 
     #--- main() starts here ---
 
@@ -355,7 +356,10 @@ class PyH3C:
       if ether.dst == self.h3cStatus.hwadd:
         radius = RADIUS_H3C(ether.data)
         eap = RADIUS_H3C.EAP(radius.data)
-        #debug_packets(ether, eap)
+        
+        # output dump content if debug is on
+        if self.h3cStatus.debug_on: 
+          debug_packets(ether, eap)
 
         if response_type[eap.code] == 'request':
           try:
