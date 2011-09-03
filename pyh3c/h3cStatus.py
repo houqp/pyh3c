@@ -84,6 +84,21 @@ class H3C_STATUS():
       self.create_config()
 
     try:
+      self.ping_interval = self.parser.get('sys_conf', 'ping_interval')
+    except ConfigParser.NoOptionError:
+      pass
+
+    try:
+      self.ping_tolerence = self.parser.get('sys_conf', 'ping_tolerence')
+    except ConfigParser.NoOptionError:
+      pass
+
+    try:
+      self.ping_after_reauth = self.parser.get('sys_conf', 'ping_after_reauth')
+    except ConfigParser.NoOptionError:
+      pass
+
+    try:
       self.new_plugins = self.parser.get('sys_conf', 'plugins')
       if self.new_plugins:
         self.plugins_to_load.extend( \

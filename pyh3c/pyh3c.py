@@ -3,7 +3,7 @@
 
 import pcap
 import dpkt
-import dnet
+#import dnet
 import binascii
 import commands
 import os 
@@ -338,7 +338,11 @@ class PyH3C:
     self.load_plugins()
     #endof initializing
 
-    self.sender = dnet.eth(self.h3cStatus.dev)
+    try:
+      libdnet = __import__('dnet')
+    except ImportError:
+      libdnet = __import__('dumbnet')
+    self.sender = libdnet.eth(self.h3cStatus.dev)
     self.h3cStatus.hwadd = self.sender.get()
 
     hw_s = binascii.b2a_hex(self.h3cStatus.hwadd)

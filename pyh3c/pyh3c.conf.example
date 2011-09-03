@@ -1,14 +1,32 @@
 [sys_conf]
 dev = eth0
 
+#
 # for those who use dhcpcd, "killall dhcpcd; sleep 1; dhcpcd" is recommended
+#
 dhcp_command = dhclient
 
+#
 # you can use domain here, but ip is recommended
+#
 ping_target = 121.195.178.238
+#
+# Interval between each ping, in seconds. Default to 1
+#
+#ping_interval = 1
+#
+# Maximun failure ping time. Default to 3
+#
+#ping_tolerence = 3
+#
+# Time to wait after reauth, in seconds. Default to 6
+#
+#ping_after_reauth = 6
 
+#
 # you can specify the plugins you want to load here
-# plugins = plugin_name1,plugin_name2
+#
+#plugins = plugin_name1,plugin_name2
 
 [account]
 user_name = test_name
