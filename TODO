@@ -1,3 +1,5 @@
+add ipv6 support 
+
 check type of failure packets
 
 add encryption for password in configuration file

@@ -1,8 +1,14 @@
 [sys_conf]
 dev = eth0
+
+# for those who use dhcpcd, "killall dhcpcd; sleep 1; dhcpcd" is recommended
 dhcp_command = dhclient
-ping_target = g.cn
-plugins =
+
+# you can use domain here, but ip is recommended
+ping_target = 121.195.178.238
+
+# you can specify the plugins you want to load here
+# plugins = plugin_name1,plugin_name2
 
 [account]
 user_name = test_name

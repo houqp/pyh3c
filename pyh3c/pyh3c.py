@@ -270,7 +270,7 @@ class PyH3C:
 
     def identity_handler_callback():
       if self.h3cStatus.auth_success:
-        print " [*] Received server check online request, sent keepalive packet."
+        print " [*] Received server check online request, sent response packet."
       else:
         print " [*] Received identity challenge request."
         print "     [#] Sent identity challenge response."
@@ -298,7 +298,7 @@ class PyH3C:
       sleep(1)
       self.send_start(send_start_callback)
 
-    def debug_packets(ether,eap):
+    def debug_packets(ether, eap):
         #print 'Ethernet II type:%s' % hex(ether.type)
         print ""
         print "# Start of dump content #"
@@ -312,6 +312,7 @@ class PyH3C:
         print "eap_code: %d" % eap.code
         print "eap_id: %d" % eap.id
         print "eap_len: %d" % eap.len
+        print "eap_type: %d" % eap.type
           #@must handle failure here
         #print "eap_type: %s" % eap_type[eap.type] 
         print "======== EAP DATA ========"
