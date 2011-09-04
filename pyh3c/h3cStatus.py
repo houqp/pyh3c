@@ -2,6 +2,7 @@
 #!/usr/bin/env python
 
 import ConfigParser
+import os
 
 __author__ = "houqp"
 __license__ = "GPL"
@@ -162,10 +163,10 @@ class H3C_STATUS():
     if not self.parser:
       self.parser = ConfigParser.SafeConfigParser()
 
-    try:
-      fp = open('pyh3c.conf', 'r+')
-    except IOError:
-      fp = open('pyh3c.conf', 'w')
+    #try:
+      #fp = open('pyh3c.conf', 'r+')
+    #except IOError:
+      #fp = open('pyh3c.conf', 'w')
 
     if not self.parser.has_section('sys_conf'):
       self.parser.add_section('sys_conf')
@@ -178,6 +179,13 @@ class H3C_STATUS():
     self.parser.set('account', 'user_name', self.user_name)
     self.parser.set('account', 'user_pass', self.user_pass)
     
+    #ConfigParser module will delete all comments, here is a dirty hack
+    #@TODO@: fix the ConfigParser module, or use cfgparse module
+    try:
+      os.unlink('pyh3c.conf')
+    except OSError:
+      pass
+    fp = open('pyh3c.conf', 'w')
     self.parser.write(fp)
     fp = fp.close()
     return 
