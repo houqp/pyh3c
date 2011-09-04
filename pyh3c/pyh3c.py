@@ -172,6 +172,22 @@ class PyH3C:
     print " [!] ----------------------------------------"
     return
 
+  def get_devices(self):
+    """
+    Get the list of all devices, return a list
+    """
+    devs = []
+    try:
+      libdnet = __import__('dnet')
+    except ImportError:
+      libdnet = __import__('dumbnet')
+    intf = libdnet.intf()
+    def add_dev(dict, arg):
+      arg.append(dict['name'])
+      return
+    intf.loop(add_dev, devs)
+    return devs
+
   def set_up_lock(self):
     """
     Setup lock file in /tmp/pyh3c.lock in which pid is written 
