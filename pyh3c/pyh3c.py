@@ -6,6 +6,7 @@ import dpkt
 #import dnet
 import binascii
 import commands
+import subprocess
 import os 
 import atexit
 import argparse
@@ -235,6 +236,10 @@ class PyH3C:
         dest='debug_on', action='store_true', \
         help="Turn on debug to see dump content.")
 
+    parser.add_argument('-k', '--kill', \
+        dest='kill_on', action='store_true', \
+        help="If there is another PyH3C instance running, kill it before start.")
+
     args = parser.parse_args(namespace=self.h3cStatus)
     return 
 
@@ -251,6 +256,16 @@ class PyH3C:
         print " [!] Plugin [ %s ] loaded." % p_item
 
     return
+
+  def kill_instance(self):
+    try:
+      fd = open(self.lock_file)
+    except IOError:
+      return
+    pid = fd.read()
+    fd.close()
+    subprocess.Popen(["kill", "-9", pid])
+    os.unlink(self.lock_file)
 
   def main(self):
 
@@ -281,6 +296,7 @@ class PyH3C:
     def do_dhcp():
       #@TODO: check operating system here
       dhcp_command = "%s %s" % (self.h3cStatus.dhcp_command, self.h3cStatus.dev)
+      #@TODO@: use subprocess here
       (status, output) = commands.getstatusoutput(dhcp_command)
       print " [#] running command: %s to get an IP." % dhcp_command
       print ""
@@ -360,13 +376,16 @@ class PyH3C:
       print " [!] You must run with root privilege!"
       exit(-1)
 
+    self.read_args()
+    if self.h3cStatus.kill_on:
+      self.kill_instance()
+
     if not self.set_up_lock():
       print " [!] Only one PyH3C can be ran at the same time!"
       exit(-1)
     atexit.register(self.clean_up)
 
     self.h3cStatus.load_config()
-    self.read_args()
     hello_world()
     self.load_plugins()
     #end of initializing
