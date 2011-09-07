@@ -110,9 +110,14 @@ def show_dialog(title, str):
 
 class H3C_GUI:
   def __init__(self):
+    #@TODO@ 
+    # check root privilege here!
+
     gobject.threads_init()
 
     self.dataQueue = Queue.Queue()
+    self.auth_loop_started = False
+    self.connection_started = False
     self.pyh3c = PyH3C()
 
     self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
@@ -179,7 +184,7 @@ class H3C_GUI:
     #endof OptionMenus
 
     #setup buttons
-    button_save_config = create_Button("Save")
+    button_save_config = create_Button("Save Configuration")
     button_save_config.connect("clicked", self.save_config, None)
 
     button_connect = create_Button("Connect")
@@ -196,16 +201,19 @@ class H3C_GUI:
     #endup buttons
 
     #setup frames
-    frame_config = create_Frame("Configuration:")
-    frame_status = create_Frame("Connection status:")
+    frame_config = create_Frame("Configuration")
+    frame_config.set_label_align(0.5,0)
+    frame_status = create_Frame("Connection status")
+    frame_status.set_label_align(0.5,0)
     #endof frames
 
     #setup TextView
     welcome_text = """
 """
     textview_status = create_TextView(welcome_text)
-    textview_sw_status = create_ScrolledWindow()
-    textview_sw_status.add(textview_status)
+    textview_status.set_size_request(width=520, height=200)
+    self.textview_sw_status = create_ScrolledWindow()
+    self.textview_sw_status.add(textview_status)
     self.buffer_status = textview_status.get_buffer()
     #endof TextView
 
@@ -214,12 +222,11 @@ class H3C_GUI:
     hsep_status.show()
     #endup separators
 
-
     #start to pack widgets
     self.window.add(box_root)
     #-----------------------------
     box_root.pack_start(root_menu_bar, False, False, 0)
-    box_root.pack_start(box_main, False, False, 0)
+    box_root.pack_start(box_main, True, True, 0)
     #-----------------------------
     box_main.pack_start(frame_config, False, False, 10)
     box_main.pack_start(frame_status, True, True, 10)
@@ -267,7 +274,7 @@ class H3C_GUI:
     #box_config.pack_start(entry_user, False, False, 0)
 
     # start of status info
-    frame_status.add(textview_sw_status)
+    frame_status.add(self.textview_sw_status)
 
     # start of buttons
     box_buttons.pack_start(button_connect, False, False, 5)
@@ -276,8 +283,9 @@ class H3C_GUI:
     box_buttons.pack_end(button_quit, False, False, 5)
     #endof packing
 
-    #do some real initialization here
-
+    #===================================
+    # do some real initialization now
+    #===================================
     #check whether the file exits before loading
     try:
       fp = open('pyh3c.conf')
@@ -298,19 +306,8 @@ class H3C_GUI:
     except ValueError:
       pass
 
-    #self.pyh3c_instance = subprocess.Popen(
-        #["python", "-u", "pyh3c.py", "-k"], 
-        #stdout = subprocess.PIPE        
-        #)
-    #self.pyh3c_instance = subprocess.Popen(
-        #["python", "-u", "test.py"], 
-        #stdout = subprocess.PIPE        
-        #)
     self.status_output = self.STATUS_OUTPUT(self)
 
-    auth_t = threading.Thread(group=None, target=self.auth_loop, name='auth_t')
-    auth_t.daemon = True
-    auth_t.start()
 
     gobject.timeout_add(100, self.queue_checker)
 
@@ -328,7 +325,18 @@ Author: houqp
     show_dialog("About", about_messg)
 
   def pressed_connect(self, widget, data=None):
-    return
+    if not self.auth_loop_started:
+      auth_t = threading.Thread(group=None, target=self.auth_loop, name='auth_t')
+      auth_t.daemon = True
+      auth_t.start()
+      self.auth_loop_started = True
+    else:
+      send_t = threading.Thread(group=None, target=self.pyh3c.send_start, name='send_start')
+      send_t.daemon = True
+      send_t.start()
+      send_t.join()
+      self.dataQueue.put((self.send_start_gui_update, None))
+      #self.send_start_gui_update()
 
   def pressed_disconnect(self, widget, data=None):
     pass
@@ -349,7 +357,6 @@ Author: houqp
 
   def change_dev(self, item, dev):
     self.pyh3c.h3cStatus.dev = dev
-    print "Changed to " + self.pyh3c.h3cStatus.dev
 
   def user_name_changed(self, entry, data=None):
     self.pyh3c.h3cStatus.user_name = entry.get_text()
@@ -389,37 +396,46 @@ Author: houqp
         gui_updater(data)
       else:
         gui_updater()
+      #self.scrolled_to_window_bottom()
     except Queue.Empty:
       pass
     return True
+
+  def scrolled_to_window_bottom(self):
+    adj = self.textview_sw_status.get_vadjustment()
+    adj.set_value(adj.get_upper() - adj.get_page_size())
 
   def hello_world_gui_update(self):
     self.status_output.write("[*] Activities from server.\n")
     self.status_output.write("[#] Activities from client.\n")
     self.status_output.write("[!] Messages you may want to read.\n")
     self.status_output.write("\n")
-    self.status_output.write(" [!] Using user name: %s\n" % self.pyh3c.h3cStatus.user_name)
-    self.status_output.write(" [!] Using interface: %s\n" % self.pyh3c.h3cStatus.dev)
-    self.status_output.write(" [!] Using DHCP script: %s\n" % self.pyh3c.h3cStatus.dhcp_command)
+    self.status_output.write("[!] Using user name: %s\n" % self.pyh3c.h3cStatus.user_name)
+    self.status_output.write("[!] Using interface: %s\n" % self.pyh3c.h3cStatus.dev)
+    self.status_output.write("[!] Using DHCP script: %s\n" % self.pyh3c.h3cStatus.dhcp_command)
     self.status_output.write("\n")
-    return 
+    self.scrolled_to_window_bottom()
 
   def send_start_gui_update(self):
-    self.status_output.write(" [*] Sent out the authentication request.\n")
+    self.status_output.write("[*] Sent out the authentication request.\n")
+    self.scrolled_to_window_bottom()
 
   def identity_gui_update(self, ether):
     if self.pyh3c.h3cStatus.auth_success:
-      self.status_output.write(" [*] Received server check online request, sent response packet.\n")
+      self.status_output.write("[*] Received server check online request, sent response packet.\n")
     else:
-      self.status_output.write(" [*] Received identity challenge request.\n")
-      self.status_output.write("     [#] Sent identity challenge response.\n")
+      self.status_output.write("[*] Received identity challenge request.\n")
+      self.status_output.write("    [#] Sent identity challenge response.\n")
+    self.scrolled_to_window_bottom()
 
   def h3c_unknown_gui_update(self, ether):
-    self.status_output.write(" [*] Received unknown h3c response from server.\n")
+    self.status_output.write(" [*]Received unknown h3c response from server.\n")
+    self.scrolled_to_window_bottom()
 
   def allocated_gui_update(self, ether):
-    self.status_output.write(" [*] Received allocated challenge request.\n")
-    self.status_output.write("     [#] Sent allocated challenge response.\n")
+    self.status_output.write("[*] Received allocated challenge request.\n")
+    self.status_output.write("    [#] Sent allocated challenge response.\n")
+    self.scrolled_to_window_bottom()
 
   def success_gui_update(self, ether):
     self.status_output.write("\n")
@@ -439,6 +455,7 @@ Author: houqp
 
     self.status_output.write("[!] Every thing is done now, happy surfing the Internet.\n")
     self.status_output.write("[!] I will send heart beat packets to keep you online.\n")
+    self.scrolled_to_window_bottom()
 
   def failure_gui_update(self, ether):
     self.status_output.write("[*] Received authentication failed packet from server.\n")
@@ -449,22 +466,24 @@ Author: houqp
       self.status_output.write("[*] Error code: \"%s\", %s\n" % (error, error_code[error]))
     except KeyError:
       self.status_output.write("[*] Error code: \"%s\", %s\n" % (binascii.b2a_hex(error), "Unknown error code!"))
-      self.status_output.write("     Please fire a bug report at:\n")
-      self.status_output.write("     https://github.com/houqp/pyh3c/issues\n")
-    self.status_output.write("     [#] Try to restart the authentication in one second.\n")
+      self.status_output.write("    Please fire a bug report at:\n")
+      self.status_output.write("    https://github.com/houqp/pyh3c/issues\n")
+    self.status_output.write("    [#] Try to restart the authentication in one second.\n")
+    self.scrolled_to_window_bottom()
   
   def wtf_gui_update(self, tuple):
     ether, eap = tuple
-    self.status_output.write(" [!] Encountered an unknown packet!\n")
-    self.status_output.write(" [!] ----------------------------------------\n")
+    self.status_output.write("[!] Encountered an unknown packet!\n")
+    self.status_output.write("[!] ----------------------------------------\n")
     self.status_output.write("\n")
     self.pyh3c.debug_packets(ether, eap)
     self.status_output.write("\n")
-    self.status_output.write(" * It may be sent from some aliens, please help improve\n")
-    self.status_output.write("   software by fire a bug report at:\n")
-    self.status_output.write("   https://github.com/houqp/pyh3c/issues\n")
-    self.status_output.write("   Also remember to paste the above output in your report.\n")
-    self.status_output.write(" [!] ----------------------------------------\n")
+    self.status_output.write("* It may be sent from some aliens, please help improve\n")
+    self.status_output.write("  software by fire a bug report at:\n")
+    self.status_output.write("  https://github.com/houqp/pyh3c/issues\n")
+    self.status_output.write("  Also remember to paste the above output in your report.\n")
+    self.status_output.write("[!] ----------------------------------------\n")
+    self.scrolled_to_window_bottom()
 
   def auth_loop(self):
 
@@ -507,6 +526,27 @@ Author: houqp
         "failure_handler_callback": failure_handler_callback,
         "wtf_handler_callback": wtf_handler_callback
         }
+
+    send_start_callback(self.pyh3c)
+    sleep(1)
+    identity_handler_callback(1, self.pyh3c)
+    sleep(1)
+    h3c_unknown_handler_callback(1, self.pyh3c)
+    sleep(1)
+    allocated_handler_callback(1, self.pyh3c)
+    sleep(1)
+    #success_handler_callback(1, self.pyh3c)
+    #sleep(1)
+    #failure_handler_callback(1, self.pyh3c)
+    send_start_callback(self.pyh3c)
+    send_start_callback(self.pyh3c)
+    send_start_callback(self.pyh3c)
+    send_start_callback(self.pyh3c)
+    send_start_callback(self.pyh3c)
+    send_start_callback(self.pyh3c)
+    send_start_callback(self.pyh3c)
+    send_start_callback(self.pyh3c)
+    send_start_callback(self.pyh3c)
 
     self.pyh3c.main(callbacks)
 
