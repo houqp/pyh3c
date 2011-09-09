@@ -374,7 +374,7 @@ if __name__ == "__main__":
     print " [*] Sent out the authentication request."
 
   def identity_handler_callback(ether, pyh3c):
-    if self.h3cStatus.auth_success:
+    if pyh3c.h3cStatus.auth_success:
       print " [*] Received server check online request, sent response packet."
     else:
       print " [*] Received identity challenge request."
@@ -419,7 +419,7 @@ if __name__ == "__main__":
       print "     https://github.com/houqp/pyh3c/issues"
     print "     [#] Try to restart the authentication in one second."
     sleep(1)
-    self.send_start(send_start_callback)
+    pyh3c.send_start(send_start_callback)
   
   def wtf_handler_callback(ether, pyh3c, eap):
     print " [!] Encountered an unknown packet!"

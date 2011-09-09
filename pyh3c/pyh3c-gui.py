@@ -10,7 +10,6 @@ import Queue
 import pcap
 import dpkt
 import binascii
-import dnet
 import subprocess
 from os import getuid
 
@@ -18,6 +17,13 @@ from pyh3c import *
 from h3cRadius import *
 from h3cPack import *
 import h3cStatus
+
+__author__ = "houqp"
+__license__ = "GPL"
+__version__ = "0.0.1"
+__maintainer__ = "houqp"
+__email__ = "qingping.hou@gmail.com"
+
 
 def create_Table(rows=1, columns=1, homogeneous=False):
   table = gtk.Table(rows, columns, homogeneous)

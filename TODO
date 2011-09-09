@@ -1,5 +1,7 @@
 add ipv6 support 
 
+add gettext module
+
 add encryption for password in configuration file
 
 100% simulate the hearbeat packet from win32 h3c client
