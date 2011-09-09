@@ -20,7 +20,7 @@ def watcher(pyh3c):
   dissconn_count = 0
   check_command = 'ping -c 1 -W 1 -n %s' % pyh3c.h3cStatus.ping_target
 
-  def restart_auth():
+  def restart_auth(pyh3c):
     print " [!] Disconnected! Now restart authentication ..."
 
   while True:
