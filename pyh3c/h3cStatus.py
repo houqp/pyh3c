@@ -13,7 +13,8 @@ __email__ = "qingping.hou@gmail.com"
 class H3C_STATUS():
   def __init__(self):
     self.dev = ""
-    self.hwadd = ""
+    self.cli_hwadd = ""
+    self.ser_hwadd = ""
     self.user_name = ""
     self.user_pass = ""
     self.dhcp_command = ""
@@ -30,7 +31,7 @@ class H3C_STATUS():
     self.ping_after_reauth = 6
     # endof keepalive plugin
 
-    self.auth_success = 0
+    self.auth_success = False
     self.parser = ConfigParser.SafeConfigParser()
 
   def load_config(self):
