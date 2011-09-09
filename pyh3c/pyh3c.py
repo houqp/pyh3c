@@ -138,8 +138,6 @@ class PyH3C:
     for plugin in self.plugins_loaded:
       getattr(plugin, 'after_auth_succ')(self)
 
-    self.logoff()
-
   def h3c_unknown_handler(self, ether, callback=do_nothing, data=None):
     """
     handler for h3c specific
