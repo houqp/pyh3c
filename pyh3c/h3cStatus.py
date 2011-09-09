@@ -178,6 +178,9 @@ class H3C_STATUS():
     self.parser.set('sys_conf', 'dev', self.dev)
     self.parser.set('sys_conf', 'dhcp_command', self.dhcp_command)
     self.parser.set('sys_conf', 'ping_target', self.ping_target)
+    self.parser.set('sys_conf', 'ping_interval', str(self.ping_interval))
+    self.parser.set('sys_conf', 'ping_tolerence', str(self.ping_tolerence))
+    self.parser.set('sys_conf', 'ping_after_reauth', str(self.ping_after_reauth))
     self.parser.set('account', 'user_name', self.user_name)
     self.parser.set('account', 'user_pass', self.user_pass)
     

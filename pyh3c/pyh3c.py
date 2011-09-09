@@ -53,7 +53,6 @@ class PyH3C:
     self.plugins_loaded = []
     self.lock_file = "/tmp/pyh3c.lock"
 
-
   def do_nothing():
     """
     Method that do nothing.
