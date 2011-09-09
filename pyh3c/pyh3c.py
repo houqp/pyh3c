@@ -328,7 +328,6 @@ class PyH3C:
 
       #ignore Packets sent by myself
       if ether.dst == self.h3cStatus.cli_hwadd:
-
         radius = RADIUS_H3C(ether.data)
         eap = RADIUS_H3C.EAP(radius.data)
         
@@ -370,17 +369,6 @@ if __name__ == "__main__":
     print " [#] Activities from client."
     print " [!] Messages you may want to read."
     print ""
-    print " ----------------------------------------------"
-    print " [!] This piece of software may not be working"
-    print " [!] as you expected. But if it really works, "
-    print " [!] remember to send me a Thank you letter via"
-    print " [!] qingping.hou@gmail.com."
-    print ""
-    print " [!] OK, I am just kidding. Forget about this."
-    print ""
-    print " [!] Now, let the hunt begin!"
-    print " ----------------------------------------------"
-    print ""
     print " [!] Using user name: %s" % pyh3c.h3cStatus.user_name
     print " [!] Using interface: %s" % pyh3c.h3cStatus.dev
     print " [!] Using DHCP script: %s" % pyh3c.h3cStatus.dhcp_command
@@ -388,7 +376,7 @@ if __name__ == "__main__":
     return 
 
   def send_start_callback(pyh3c):
-    print " [*] Sent out the authentication request."
+    print " [*] Sent out authentication request."
 
   def identity_handler_callback(ether, pyh3c):
     if pyh3c.h3cStatus.auth_success:
