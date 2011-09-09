@@ -19,7 +19,7 @@ import plugins
 
 __author__ = "houqp"
 __license__ = "GPL"
-__version__ = "0.5.1"
+__version__ = "0.6.1"
 __maintainer__ = "houqp"
 __email__ = "qingping.hou@gmail.com"
 
@@ -44,7 +44,8 @@ error_code = {
     '\x00\x00\x00\x00\x00\x00':'Authentication failed',
     'E63034':'Wrong password',
     'E63035':'Wrong password',
-    'E63036':'Unknown user name'
+    'E63036':'There is no such a user',
+    'E63022':'Maxium online user number reached!'
     }
 
 class PyH3C:
@@ -70,7 +71,7 @@ class PyH3C:
           len = 0,
           data = '\x00'
         )
-    start_packet = pack_ether(self.h3cStatus.hwadd, "\xff\xff\xff\xff\xff\xff", start_radius)
+    start_packet = pack_ether(self.h3cStatus.cli_hwadd, "\xff\xff\xff\xff\xff\xff", start_radius)
 
     #call before_auth functions registered by plugins
     for plugin in self.plugins_loaded:
@@ -82,14 +83,24 @@ class PyH3C:
     else:
       callback(self)
 
+  def logoff(self, callback=do_nothing, data=None):
+    """
+    send logoff packet
+    """
+    logoff_radius = pack_radius(0x01, 0x02)
+    logoff_packet = pack_ether(self.h3cStatus.cli_hwadd, self.h3cStatus.ser_hwadd, logoff_radius)
+    self.sender.send(str(logoff_packet))
+
   def identity_handler(self, ether, callback=do_nothing, data=None):
     """ 
     response user_name to server
     """
-    #@you may need to set id according to server's response here
-    identity_eap = pack_eap(0x02, 0x02, 0x01, self.h3cStatus.user_name)
+    self.h3cStatus.ser_hwadd = ether.src
+    radius = RADIUS_H3C(ether.data)
+    eap = RADIUS_H3C.EAP(radius.data)
+    identity_eap = pack_eap(0x02, eap.id, 0x01, self.h3cStatus.user_name)
     identity_radius = pack_radius(0x01, 0x00, identity_eap)
-    identity_packet = pack_ether(self.h3cStatus.hwadd, ether.src, identity_radius)
+    identity_packet = pack_ether(self.h3cStatus.cli_hwadd, self.h3cStatus.ser_hwadd, identity_radius)
     self.sender.send(str(identity_packet))
     if data:
       callback(ether, self, data)
@@ -100,11 +111,12 @@ class PyH3C:
     """ 
     response password to server
     """
+    radius = RADIUS_H3C(ether.data)
+    eap = RADIUS_H3C.EAP(radius.data)
     auth_data = "%s%s%s" % ( chr(len(self.h3cStatus.user_pass)), self.h3cStatus.user_pass, self.h3cStatus.user_name )
-    #@you may need to set id according to server's response here
-    allocated_eap = pack_eap(0x02, 0x03, 0x07, auth_data)
+    allocated_eap = pack_eap(0x02, eap.id, 0x07, auth_data)
     allocated_radius = pack_radius(0x01, 0x00, allocated_eap)
-    allocated_packet = pack_ether(self.h3cStatus.hwadd, ether.src, allocated_radius)
+    allocated_packet = pack_ether(self.h3cStatus.cli_hwadd, self.h3cStatus.ser_hwadd, allocated_radius)
     self.sender.send(str(allocated_packet))
     if data:
       callback(ether, self, data)
@@ -115,7 +127,7 @@ class PyH3C:
     """
     handler for success
     """
-    self.h3cStatus.auth_success = 1
+    self.h3cStatus.auth_success = True
 
     if data:
       callback(ether, self, data)
@@ -139,7 +151,7 @@ class PyH3C:
     """
     handler for failed authentication
     """
-    self.h3cStatus.auth_success = 0
+    self.h3cStatus.auth_success = False
     if data:
       callback(ether, self, data)
     else:
@@ -171,11 +183,13 @@ class PyH3C:
     intf.loop(add_dev, devs)
     return devs
 
-  def debug_packets(self, ether, eap):
+  def debug_packets(self, ether):
       #print 'Ethernet II type:%s' % hex(ether.type)
+      radius = RADIUS_H3C(ether.data)
+      eap = RADIUS_H3C.EAP(radius.data)
       print ""
       print "# Start of dump content #"
-      print 'From %s to %s' % tuple( map(binascii.b2a_hex, (ether.src, ether.dst) ))
+      print 'From %s to %s' % tuple( map(binascii.b2a_hex, (self.h3cStatus.ser_hwadd, ether.dst) ))
       print "%s" % dpkt.hexdump(str(ether), 20)
       print "==== RADIUS ===="
       print "radius_len: %d" % radius.len
@@ -296,11 +310,11 @@ class PyH3C:
     except ImportError:
       libdnet = __import__('dumbnet')
     self.sender = libdnet.eth(self.h3cStatus.dev)
-    self.h3cStatus.hwadd = self.sender.get()
+    self.h3cStatus.cli_hwadd = self.sender.get()
 
-    hw_s = binascii.b2a_hex(self.h3cStatus.hwadd)
-    filter_hwadd = "%s:%s:%s:%s:%s:%s" % (hw_s[0:2], hw_s[2:4], hw_s[4:6], hw_s[6:8], hw_s[8:10], hw_s[10:12])
-    filter = 'ether host %s and ether proto 0x888e' % filter_hwadd
+    hw_s = binascii.b2a_hex(self.h3cStatus.cli_hwadd)
+    filter_cli_hwadd = "%s:%s:%s:%s:%s:%s" % (hw_s[0:2], hw_s[2:4], hw_s[4:6], hw_s[6:8], hw_s[8:10], hw_s[10:12])
+    filter = 'ether host %s and ether proto 0x888e' % filter_cli_hwadd
 
     pc = pcap.pcap(self.h3cStatus.dev)
     pc.setfilter(filter)
@@ -311,13 +325,13 @@ class PyH3C:
       ether = dpkt.ethernet.Ethernet(pdata)
 
       #ignore Packets sent by myself
-      if ether.dst == self.h3cStatus.hwadd:
+      if ether.dst == self.h3cStatus.cli_hwadd:
         radius = RADIUS_H3C(ether.data)
         eap = RADIUS_H3C.EAP(radius.data)
         
         # output dump content if debug is on
         if self.h3cStatus.debug_on: 
-          self.debug_packets(ether, eap)
+          self.debug_packets(ether)
 
         if response_type[eap.code] == 'request':
           try:
@@ -353,17 +367,6 @@ if __name__ == "__main__":
     print " [#] Activities from client."
     print " [!] Messages you may want to read."
     print ""
-    print " ----------------------------------------------"
-    print " [!] This piece of software may not be working"
-    print " [!] as you expected. But if it really works, "
-    print " [!] remember to send me a Thank you letter via"
-    print " [!] qingping.hou@gmail.com."
-    print ""
-    print " [!] OK, I am just kidding. Forget about this."
-    print ""
-    print " [!] Now, let the hunt begin!"
-    print " ----------------------------------------------"
-    print ""
     print " [!] Using user name: %s" % pyh3c.h3cStatus.user_name
     print " [!] Using interface: %s" % pyh3c.h3cStatus.dev
     print " [!] Using DHCP script: %s" % pyh3c.h3cStatus.dhcp_command
@@ -371,10 +374,10 @@ if __name__ == "__main__":
     return 
 
   def send_start_callback(pyh3c):
-    print " [*] Sent out the authentication request."
+    print " [*] Sent out authentication request."
 
   def identity_handler_callback(ether, pyh3c):
-    if self.h3cStatus.auth_success:
+    if pyh3c.h3cStatus.auth_success:
       print " [*] Received server check online request, sent response packet."
     else:
       print " [*] Received identity challenge request."
@@ -419,13 +422,13 @@ if __name__ == "__main__":
       print "     https://github.com/houqp/pyh3c/issues"
     print "     [#] Try to restart the authentication in one second."
     sleep(1)
-    self.send_start(send_start_callback)
+    pyh3c.send_start(send_start_callback)
   
   def wtf_handler_callback(ether, pyh3c, eap):
     print " [!] Encountered an unknown packet!"
     print " [!] ----------------------------------------"
     print ""
-    pyh3c.debug_packets(ether, eap)
+    pyh3c.debug_packets(ether)
     print ""
     print " * It may be sent from some aliens, please help improve"
     print "   software by fire a bug report at:"
