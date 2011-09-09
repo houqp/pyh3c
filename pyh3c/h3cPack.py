@@ -7,7 +7,7 @@ from h3cRadius import *
 
 __author__ = "houqp"
 __license__ = "GPL"
-__version__ = "1.0"
+__version__ = "1.1"
 __maintainer__ = "houqp"
 __email__ = "qingping.hou@gmail.com"
 
@@ -26,19 +26,27 @@ def pack_ether(_src, _dst, _radius):
       )
   return _ether
 
-def pack_radius(_code, _id, _eap):
+def pack_radius(_code, _id, _eap=None):
   """
   construct and return a radius header.
   _code, _id should be selfexplanatory
   _len is the length of eap Packet
   _eap is a RADIUS_H3C.EAP object, not a string
   """
-  _radius = RADIUS_H3C(
-        code = 1,
-        id = 0,
-        len = _eap.len,
-        data = str(_eap)
-      )
+  if not _eap:
+    _radius = RADIUS_H3C(
+          code = _code,
+          id = _id,
+          len = 0,
+          data = ""
+        )
+  else:
+    _radius = RADIUS_H3C(
+          code = _code,
+          id = _id,
+          len = _eap.len,
+          data = str(_eap)
+        )
   return _radius
 
 def pack_eap(_code, _id, _type, _auth_data):
