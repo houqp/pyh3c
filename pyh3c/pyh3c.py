@@ -19,12 +19,11 @@ import plugins
 
 __author__ = "houqp"
 __license__ = "GPL"
-__version__ = "0.6.1"
+__version__ = "0.7.1"
 __maintainer__ = "houqp"
 __email__ = "qingping.hou@gmail.com"
 
-
-response_type = { 
+eap_code = { 
     0x00:'nothing',
     0x01:'request', 
     0x02:'response',
@@ -195,7 +194,7 @@ class PyH3C:
       print "radius_len: %d" % radius.len
       #print "======== EAP_HDR ========"
       #print "%s" % dpkt.hexdump(str(eap), 20)
-      #print "server_response: %s" % response_type[eap.code]
+      #print "server_response: %s" % eap_code[eap.code]
       print "eap_code: %d" % eap.code
       print "eap_id: %d" % eap.id
       print "eap_len: %d" % eap.len
@@ -333,7 +332,7 @@ class PyH3C:
         if self.h3cStatus.debug_on: 
           self.debug_packets(ether)
 
-        if response_type[eap.code] == 'request':
+        if eap_code[eap.code] == 'request':
           try:
             handler = "%s_handler" % eap_type[eap.type]
           except KeyError:
@@ -342,7 +341,7 @@ class PyH3C:
             continue
         else:
           try:
-            handler = "%s_handler" % response_type[eap.code]
+            handler = "%s_handler" % eap_code[eap.code]
           except KeyError:
             handler = "wtf_handler"
             self.wtf_handler(ether, callbacks["wtf_handler_callback"], eap)
