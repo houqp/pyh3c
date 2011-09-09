@@ -189,7 +189,7 @@ class PyH3C:
       eap = RADIUS_H3C.EAP(radius.data)
       print ""
       print "# Start of dump content #"
-      print 'From %s to %s' % tuple( map(binascii.b2a_hex, (self.h3cStatus.ser_hwadd, ether.dst) ))
+      print 'From %s to %s' % tuple( map(binascii.b2a_hex, (ether.src, ether.dst) ))
       print "%s" % dpkt.hexdump(str(ether), 20)
       print "==== RADIUS ===="
       print "radius_len: %d" % radius.len
