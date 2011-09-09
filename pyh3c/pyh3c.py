@@ -44,7 +44,7 @@ error_code = {
     '\x00\x00\x00\x00\x00\x00':'Authentication failed',
     'E63034':'Wrong password',
     'E63035':'Wrong password',
-    'E63036':'Unknown user name',
+    'E63036':'There is no such a user',
     'E63022':'Maxium online user number reached!'
     }
 
