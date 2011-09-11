@@ -23,7 +23,18 @@ __version__ = "0.7.1"
 __maintainer__ = "houqp"
 __email__ = "qingping.hou@gmail.com"
 
+
 _ = i18n.language.lgettext
+
+def p_ser_act(msg):
+  print " [*] %s" % msg
+
+def p_cli_act(msg):
+  print " [#] %s" % msg
+
+def p_msg(msg):
+  print " [!] %s" % msg
+
 
 eap_code = { 
     0x00:'nothing',
@@ -270,9 +281,9 @@ class PyH3C:
       try:
         self.plugins_loaded.append(getattr(self.h3cStatus.plugins, p_item))
       except AttributeError:
-        print _(' [!] Failed while loading plugin %s.') % p_item
+        p_msg(_('Failed while loading plugin %s.')) % p_item
       else:
-        print _(' [!] Plugin [ %s ] loaded.') % p_item
+        p_msg(_('Plugin [ %s ] loaded.')) % p_item
 
     return
 
@@ -289,7 +300,7 @@ class PyH3C:
   def main(self, callbacks):
     #for initializing
     if not (os.getuid() == 0):
-      print _(' [!] You must run with root privilege!')
+      p_msg(_('You must run with root privilege!'))
       exit(-1)
 
     self.read_args()
@@ -297,7 +308,7 @@ class PyH3C:
       self.kill_instance()
 
     if not self.set_up_lock():
-      print _(' [!] Only one PyH3C can be ran at the same time!')
+      p_msg(_('Only one PyH3C can be ran at the same time!'))
       exit(-1)
     atexit.register(self.clean_up)
 
@@ -353,7 +364,7 @@ class PyH3C:
         hander_callback = "%s_callback" % handler
         getattr(self,handler)(ether, callbacks[hander_callback])
 
-    print _(' [!] PyH3C exits!')
+    p_msg(_('PyH3C exits!'))
     return
 
 
@@ -364,31 +375,31 @@ if __name__ == "__main__":
   def hello_world(pyh3c):
     print _('')
     print _(' === PyH3C %s ===') % __version__
-    print _(' [*] Activities from server.')
-    print _(' [#] Activities from client.')
-    print _(' [!] Messages you may want to read.')
+    p_ser_act(_('Activities from server.'))
+    p_cli_act(_('Activities from client.'))
+    p_msg(_('Messages you may want to read.'))
     print _('')
-    print _(' [!] Using user name: %s') % pyh3c.h3cStatus.user_name
-    print _(' [!] Using interface: %s') % pyh3c.h3cStatus.dev
-    print _(' [!] Using DHCP script: %s') % pyh3c.h3cStatus.dhcp_command
+    p_msg(_('Using user name: %s')) % pyh3c.h3cStatus.user_name
+    p_msg(_('Using interface: %s')) % pyh3c.h3cStatus.dev
+    p_msg(_('Using DHCP script: %s')) % pyh3c.h3cStatus.dhcp_command
     print _('')
     return 
 
   def send_start_callback(pyh3c):
-    print _(' [*] Sent out authentication request.')
+    p_ser_act(_('Sent out authentication request.'))
 
   def identity_handler_callback(ether, pyh3c):
     if pyh3c.h3cStatus.auth_success:
-      print _(' [*] Received server check online request, sent response packet.')
+      p_ser_act(_('Received server check online request, sent response packet.'))
     else:
-      print _(' [*] Received identity challenge request.')
+      p_ser_act(_('Received identity challenge request.'))
       print _('     [#] Sent identity challenge response.')
 
   def h3c_unknown_handler_callback(ether, pyh3c):
-    print _(' [*] Received unknown h3c response from server.')
+    p_ser_act(_('Received unknown h3c response from server.'))
 
   def allocated_handler_callback(ether, pyh3c):
-    print _(' [*] Received allocated challenge request.')
+    p_ser_act(_('Received allocated challenge request.'))
     print _('     [#] Sent allocated challenge response.')
 
   def success_handler_callback(ether, pyh3c):
@@ -402,23 +413,23 @@ if __name__ == "__main__":
     dhcp_command = "%s %s" % (pyh3c.h3cStatus.dhcp_command, pyh3c.h3cStatus.dev)
     #@TODO@: use subprocess here
     (status, output) = commands.getstatusoutput(dhcp_command)
-    print _(' [#] running command: %s to get an IP.') % dhcp_command
+    p_cli_act(_('running command: %s to get an IP.')) % dhcp_command
     print _('')
     print output
     print _('')
 
-    print _(' [!] Every thing is done now, happy surfing the Internet.') 
-    print _(' [!] I will send heart beat packets to keep you online.') 
+    p_msg(_('Every thing is done now, happy surfing the Internet.')) 
+    p_msg(_('I will send heart beat packets to keep you online.')) 
 
   def failure_handler_callback(ether, pyh3c):
-    print _(' [*] Received authentication failed packet from server.')
+    p_ser_act(_('Received authentication failed packet from server.'))
     radius = RADIUS_H3C(ether.data)
     eap = RADIUS_H3C.EAP(radius.data)
     error = eap.data[1:7]
     try:
-      print _(' [*] Error code: \"%s\", %s') % (error, error_code[error])
+      p_ser_act(_('Error code: \"%s\", %s') % (error, error_code[error]))
     except KeyError:
-      print _(' [*] Error code: \"%s\", %s' % (binascii.b2a_hex(error), 'Unknown error code!'))
+      p_ser_act(_('Error code: \"%s\", %s' % (binascii.b2a_hex(error), 'Unknown error code!')))
       print _('     Please fire a bug report at:')
       print _('     https://github.com/houqp/pyh3c/issues')
     print _('     [#] Try to restart the authentication in one second.')
@@ -426,8 +437,8 @@ if __name__ == "__main__":
     pyh3c.send_start(send_start_callback)
   
   def wtf_handler_callback(ether, pyh3c, eap):
-    print _(' [!] Encountered an unknown packet!')
-    print _(' [!] ----------------------------------------')
+    p_msg(_('Encountered an unknown packet!'))
+    p_msg(_('----------------------------------------'))
     print _('')
     pyh3c.debug_packets(ether)
     print _('')
@@ -435,7 +446,7 @@ if __name__ == "__main__":
     print _('   software by fire a bug report at:')
     print _('   https://github.com/houqp/pyh3c/issues')
     print _('   Also remember to paste the above output in your report.')
-    print _(' [!] ----------------------------------------')
+    p_msg(_('----------------------------------------'))
 
 
   callbacks = {

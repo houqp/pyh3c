@@ -3,7 +3,9 @@
 
 import ConfigParser
 import os
+
 import i18n
+from i18n import *
 
 __author__ = "houqp"
 __license__ = "GPL"
@@ -43,8 +45,8 @@ class H3C_STATUS():
     """
     if not self.parser.read( ('pyh3c.conf')):
       print _('')
-      print _(' [!] No configuration file found!')
-      print _(' [!] Please answer following question to setup ')
+      p_msg(_('No configuration file found!'))
+      p_msg(_('Please answer following question to setup '))
       print _('     the configuration file: ')
       print _('')
       self.create_config()
