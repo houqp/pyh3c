@@ -393,14 +393,14 @@ if __name__ == "__main__":
       p_ser_act(_('Received server check online request, sent response packet.'))
     else:
       p_ser_act(_('Received identity challenge request.'))
-      print _('     [#] Sent identity challenge response.')
+      p_cli_act(_('Sent identity challenge response.'))
 
   def h3c_unknown_handler_callback(ether, pyh3c):
     p_ser_act(_('Received unknown h3c response from server.'))
 
   def allocated_handler_callback(ether, pyh3c):
     p_ser_act(_('Received allocated challenge request.'))
-    print _('     [#] Sent allocated challenge response.')
+    p_cli_act(_('Sent allocated challenge response.'))
 
   def success_handler_callback(ether, pyh3c):
     print ''
@@ -432,7 +432,7 @@ if __name__ == "__main__":
       p_ser_act(_('Error code: \"%s\", %s' % (binascii.b2a_hex(error), 'Unknown error code!')))
       print _('     Please fire a bug report at:')
       print _('     https://github.com/houqp/pyh3c/issues')
-    print _('     [#] Try to restart the authentication in one second.')
+    print p_cli_act(_('Try to restart the authentication in one second.'))
     sleep(1)
     pyh3c.send_start(send_start_callback)
   
