@@ -13,13 +13,25 @@ You need to install dpkt, libdnet argparse and pypcap python library before you 
 
 So for Ubuntu users:
 
-    apt-get install python-pypcap python-dpkt python-dumbnet python-argparse
+```bash
+apt-get install python-pypcap python-dpkt python-dumbnet python-argparse
+```
 
 For Gentoo users:
 
-    emerge pypcap dpkt libdnet argparse
+```bash
+emerge pypcap dpkt libdnet argparse
+```
 
 When you emerge libdnet, remember to have python use flag turned on (It's turned on by default).
+
+For ArchLinux users: 
+
+You should first have `AUR` correctly configured and install `yaourt`(there's no reason not to use it, XD), then,
+
+```bash
+yaourt -S pypcap-svn dpkt libdnet
+```
 
 Sorry for coming along with lots of dependencies. :-( I will clean this up when I have time.
 
@@ -31,7 +43,9 @@ It is recommended to use configuration file for setup. Please checkout pyh3c.con
 
 You must run the program with root privilege:
 
-    sudo python pyh3c.py
+```bash
+sudo python pyh3c.py
+```
 
 If you want to use command line arguments to setup PyH3C, check out -h argument for more information.
 
