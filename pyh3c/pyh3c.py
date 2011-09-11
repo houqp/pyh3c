@@ -19,7 +19,7 @@ import plugins
 
 __author__ = "houqp"
 __license__ = "GPL"
-__version__ = "0.7.1"
+__version__ = "0.8.0"
 __maintainer__ = "houqp"
 __email__ = "qingping.hou@gmail.com"
 
