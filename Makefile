@@ -1,7 +1,7 @@
 .PHONY:clean all
 
 all:
-	markdown README.md > index.html
+	mdpage -t index.tp -m index.md -o index.html
 
 clean:
 	rm -rf *.html
