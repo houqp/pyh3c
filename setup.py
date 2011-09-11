@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
-
 from distutils.core import setup
 
 setup(name='pyh3c',
@@ -12,7 +10,7 @@ setup(name='pyh3c',
       author_email='qingping.hou@gmail.com',
       url='https://github.com/houqp/pyh3c',
       download_url='https://github.com/houqp/pyh3c',
-      license='',
+      license='GPL',
       packages=['pyh3c', 'pyh3c/plugins'],
       scripts=['scripts/pyh3c'],
       )
