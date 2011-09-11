@@ -8,29 +8,29 @@ Currently, python 3 is not supported. Also Windows operating system is not suppo
 Dependencies
 ------------
 
-You need to install dpkt, libdnet argparse and pypcap python library before you run the program.
+You need to install `dpkt`, `libdnet`, `argparse` and `pypcap` library before you run the program.
 
-So for Ubuntu users:
+So for **Ubuntu** users:
 
-```bash
-apt-get install python-pypcap python-dpkt python-dumbnet python-argparse
-```
+    ```bash
+    $ sudo apt-get install python-pypcap python-dpkt python-dumbnet python-argparse
+    ```
 
-For Gentoo users:
+For **Gentoo** users:
 
-```bash
-emerge pypcap dpkt libdnet argparse
-```
+    ```bash
+    $ emerge pypcap dpkt libdnet argparse
+    ```
 
-When you emerge libdnet, remember to have python use flag turned on (It's turned on by default).
+    When you emerge libdnet, remember to have python use flag turned on (It's turned on by default).
 
-For ArchLinux users: 
+For **ArchLinux** users: 
 
-You should first have `AUR` correctly configured and install `yaourt`(there's no reason not to use it, XD), then,
+    You should first have `AUR` correctly configured and install `yaourt`(there's no reason not to use it, XD), then,
 
-```bash
-yaourt -S pypcap-svn dpkt libdnet
-```
+    ```bash
+    $ yaourt -S pypcap-svn dpkt libdnet
+    ```
 
 Sorry for coming along with lots of dependencies. :-( I will clean this up when I have time.
 
@@ -41,7 +41,7 @@ Installation
 Run the `setup.py` script which is contained in this program's directory
 
 ```
-sudo python setup.py install
+$ sudo python setup.py install
 ```
 
 
@@ -53,7 +53,7 @@ It is recommended to use configuration file for setup. Please checkout pyh3c.con
 You must run the program with root privilege:
 
 ```bash
-sudo pyh3c
+$ sudo pyh3c
 ```
 
 If you want to use command line arguments to setup PyH3C, check out -h argument for more information.
