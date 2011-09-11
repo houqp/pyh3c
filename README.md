@@ -13,13 +13,25 @@ You need to install `dpkt`, `libdnet`, `argparse` and `pypcap` library before yo
 So for **Ubuntu** users:
 
 ```bash
-$ sudo apt-get install python-pypcap python-dpkt python-dumbnet python-argparse
+$ sudo apt-get install python-pypcap python-dpkt python-dumbnet
+```
+
+If you're using pyhton with version lower than 2.7, you will also need to install argparse:
+
+```bash
+$ sudo apt-get install python-argparse
 ```
 
 For **Gentoo** users:
 
 ```bash
-$ emerge pypcap dpkt libdnet argparse
+$ emerge pypcap dpkt libdnet 
+```
+
+If you're using pyhton with version lower than 2.7, you will also need to install argparse:
+
+```bash
+$ emerge argparse
 ```
 
 For **ArchLinux** users: 
