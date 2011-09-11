@@ -1,14 +1,17 @@
-# -*- coding:utf8 -*-
+# -*- coding:utf-8 -*-
 #!/usr/bin/env python
 
 import ConfigParser
 import os
+import i18n
 
 __author__ = "houqp"
 __license__ = "GPL"
 __version__ = "0.3.1"
 __maintainer__ = "houqp"
 __email__ = "qingping.hou@gmail.com"
+
+_ = i18n.language.lgettext
 
 class H3C_STATUS():
   def __init__(self):
@@ -39,11 +42,11 @@ class H3C_STATUS():
     load configuration file
     """
     if not self.parser.read( ('pyh3c.conf')):
-      print ""
-      print " [!] No configuration file found!"
-      print " [!] Please answer following question to setup "
-      print "     the configuration file: "
-      print ""
+      print _('')
+      print _(' [!] No configuration file found!')
+      print _(' [!] Please answer following question to setup ')
+      print _('     the configuration file: ')
+      print _('')
       self.create_config()
       return
 
@@ -126,34 +129,34 @@ class H3C_STATUS():
       intf = libdnet.intf()
       def print_dev(dict, arg):
         if not dict['name'] == 'lo':
-          print " * %s" % dict['name']
+          print _(' * %s') % dict['name']
         return
-      print "Devices that you can choose are:"
+      print _('Devices that you can choose are:')
       intf.loop(print_dev)
-      print ""
-      print " - Most of the time, eth0 is the correct choice."
-      print " - If you are using wireless network, than you may need"
-      print "   to choose wlan0 or something like that."
-      print ""
+      print _('')
+      print _(' - Most of the time, eth0 is the correct choice.')
+      print _(' - If you are using wireless network, than you may need')
+      print _('   to choose wlan0 or something like that.')
+      print _('')
       self.dev = raw_input('Please input the device you want to use: ')
-      print "------"
+      print _('------')
 
     if not self.user_name:
       self.user_name = raw_input('Please input the user name of your account: ')
-      print "------"
+      print _('------')
 
     if not self.user_pass:
       self.user_pass = raw_input('Please input the password of your account: ')
-      print "------"
+      print _('------')
 
     if not self.dhcp_command:
       self.dhcp_command = raw_input('Please input the command you use to acquire ip with DHCP: ')
-      print "------"
+      print _('------')
     
     if not self.ping_target:
-      print "To disable online status checking, just type \"none\"."
+      print _('To disable online status checking, just type \"none\".')
       self.ping_target = raw_input('Please input the target ip you want to ping for online checking: ')
-      print "------"
+      print _('------')
 
     self.save_config()
     return 
