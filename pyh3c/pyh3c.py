@@ -1,5 +1,5 @@
-# -*- coding:utf-8 -*-
 #!/usr/bin/env python
+# -*- coding:utf-8 -*-
 
 import pcap
 import dpkt
@@ -368,7 +368,7 @@ class PyH3C:
     return
 
 
-if __name__ == "__main__":
+def main():
 
   pyh3c = PyH3C()
 
@@ -464,3 +464,5 @@ if __name__ == "__main__":
 
 
 
+if __name__ == "__main__":
+    main()
