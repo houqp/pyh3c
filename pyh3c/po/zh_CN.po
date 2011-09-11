@@ -1,0 +1,214 @@
+# Chinese translations for pyh package
+# pyh 软件包的简体中文翻译.
+# Copyright (C) 2011 THE pyh'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the pyh package.
+#  <dave2008713@gmail.com>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pyh 3c\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-09-11 09:28+0800\n"
+"PO-Revision-Date: 2011-09-11 09:29+0800\n"
+"Last-Translator:  <dave2008713@gmail.com>\n"
+"Language-Team: Chinese (simplified)\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../h3cStatus.py:48
+msgid "No configuration file found!"
+msgstr "未找到任何配置文件！"
+
+#: ../h3cStatus.py:49
+msgid "Please answer following question to setup "
+msgstr "请回到以下问题以正确设置PyH3C"
+
+#: ../h3cStatus.py:50
+msgid "     the configuration file: "
+msgstr "     的配置文件："
+
+#: ../h3cStatus.py:136
+msgid "Devices that you can choose are:"
+msgstr "目前系统中可选择的网卡有："
+
+#: ../h3cStatus.py:139
+msgid " - Generally, eth0 is the right choice for GNU/Linux users."
+msgstr " - 对于GNU/Linux用户，eth0 [通常] 就是正确的选择。"
+
+#: ../h3cStatus.py:140
+msgid " - If you are using wireless network, than you may need"
+msgstr " - 如果通过无线网络进行认证，那么你需要选择wlan0"
+
+#: ../h3cStatus.py:141
+msgid "   to choose wlan0 or something like that."
+msgstr "   或名字类似的网卡。（同样是针对GNU/Linux用户）"
+
+#: ../h3cStatus.py:159
+msgid "To disable online status checking, just type \"none\"."
+msgstr "若要关闭防掉线检测功能，请在此输入 \"none\"。"
+
+#: ../pyh3c.py:203
+msgid "# Start of dumping debug content #"
+msgstr "# 开始输出调试信息 #"
+
+#: ../pyh3c.py:219
+msgid "# End of dumping debug content #"
+msgstr "# 调试信息输出结束 #"
+
+#: ../pyh3c.py:284
+msgid "Failed while loading plugin "
+msgstr "无法加载插件"
+
+#: ../pyh3c.py:284
+msgid "."
+msgstr "。"
+
+#: ../pyh3c.py:286
+msgid "Plugin [ "
+msgstr "插件 ["
+
+#: ../pyh3c.py:286
+msgid "] loaded."
+msgstr "] 已加载。"
+
+#: ../pyh3c.py:303
+msgid "You must run with root privilege!"
+msgstr "你必须以管理员（root）权限运行本程序！"
+
+#: ../pyh3c.py:311
+msgid "Only one PyH3C can be ran at the same time!"
+msgstr "同一时间只能运行一个PyH3C程序！"
+
+#: ../pyh3c.py:367
+msgid "PyH3C exits!"
+msgstr "PyH3C退出！"
+
+#: ../pyh3c.py:378
+msgid "Activities from server."
+msgstr "服务器的活动"
+
+#: ../pyh3c.py:379
+msgid "Activities from client."
+msgstr "客户端的活动"
+
+#: ../pyh3c.py:380
+msgid "Messages you may want to read."
+msgstr "提示消息"
+
+#: ../pyh3c.py:382
+msgid "Using user name: "
+msgstr "当前所使用的账户："
+
+#: ../pyh3c.py:383
+msgid "Using interface: "
+msgstr "当前所使用的网卡："
+
+#: ../pyh3c.py:384
+msgid "Using DHCP script: "
+msgstr "当前所使用的DHCP脚本："
+
+#: ../pyh3c.py:389
+msgid "Sent out authentication request."
+msgstr "已发出认证请求。"
+
+#: ../pyh3c.py:393
+msgid "Received server check online request, sent response packet."
+msgstr "收到服务器在线确认请求，已回复以保持在线。"
+
+#: ../pyh3c.py:395
+msgid "Received identity challenge request."
+msgstr "收到用户名验证请求。"
+
+#: ../pyh3c.py:396
+msgid "Sent identity challenge response."
+msgstr "已发送用户名。"
+
+#: ../pyh3c.py:399
+msgid "Received unknown h3c response from server."
+msgstr "收到服务端的未知回复（这是正常的，不用怕）"
+
+#: ../pyh3c.py:402
+msgid "Received allocated challenge request."
+msgstr "收到密码验证请求。"
+
+#: ../pyh3c.py:403
+msgid "Sent allocated challenge response."
+msgstr "已发送账户密码。"
+
+#: ../pyh3c.py:408
+msgid " | [^_^] Successfully passed the authentication! |"
+msgstr " | [^_^] 成功通过认证！"
+
+#: ../pyh3c.py:416
+msgid "running command: "
+msgstr "运行命令："
+
+#: ../pyh3c.py:416
+msgid "to get an IP."
+msgstr "以获取IP地址。"
+
+#: ../pyh3c.py:421
+msgid "Every thing is done now, happy surfing the Internet."
+msgstr "搞定！请尽情享受地球上最大的局域网吧!"
+
+#: ../pyh3c.py:422
+msgid "I will send heart beat packets to keep you online."
+msgstr "我会发送心跳包以保持在线状态。"
+
+#: ../pyh3c.py:425
+msgid "Received authentication failed packet from server."
+msgstr "收到认证失败消息。"
+
+#: ../pyh3c.py:430 ../pyh3c.py:432
+msgid "Error code: "
+msgstr "错误代码："
+
+#: ../pyh3c.py:433
+msgid "     Please fire a bug report at:"
+msgstr "     请在以下网址填写一份bug报告。"
+
+#: ../pyh3c.py:435
+msgid "Try to restart the authentication in one second."
+msgstr "将在1秒后重启认证程序。"
+
+#: ../pyh3c.py:440
+msgid "Encountered an unknown packet!"
+msgstr "收到素未谋面的数据包！"
+
+#: ../pyh3c.py:445
+msgid " * It may be sent from some aliens, please help improve"
+msgstr " * 可能是外星人发来的，为了让这个软件更靠谱，请在以下页面"
+
+#: ../pyh3c.py:446
+msgid "   software by fire a bug report at:"
+msgstr "提交bug报告："
+
+#: ../pyh3c.py:448
+msgid "   Also remember to paste the above output in your report."
+msgstr "   再所提交报告的内容中请附上上面所有的输出信息。"
+
+#~ msgid "Failed while loading plugin %s."
+#~ msgstr "加载 %s 插件失败。"
+
+#~ msgid "Plugin [ %s ] loaded."
+#~ msgstr "插件 [%s] 加载成功。"
+
+#~ msgid "From %s to %s"
+#~ msgstr "由 %s 发送至 %s"
+
+#~ msgid "Using user name: %s"
+#~ msgstr "当前使用的用户名：%s"
+
+#~ msgid "Using interface: %s"
+#~ msgstr "当前使用的网卡：%s"
+
+#~ msgid "Using DHCP script: %s"
+#~ msgstr "当前使用的DHCP脚本：%s"
+
+#~ msgid "running command: %s to get an IP."
+#~ msgstr "正在运行命令：%s 已获取IP地址。"
+
+#~ msgid "Error code: \"%s\", %s"
+#~ msgstr "错误代码： \"%s\", %s"
