@@ -5,9 +5,8 @@ PyH3C is a program for passing h3c authentication in SYSU east campus.
 
 Currently, python 3 is not supported. Also Windows operating system is not supported because I do not know how to acquire IP under this user friendly system. ;-P
 
-
-Installation
--------
+Dependencies
+------------
 
 You need to install dpkt, libdnet argparse and pypcap python library before you run the program.
 
@@ -36,6 +35,16 @@ yaourt -S pypcap-svn dpkt libdnet
 Sorry for coming along with lots of dependencies. :-( I will clean this up when I have time.
 
 
+Installation
+------------
+
+Run the `setup.py` script which is contained in this program's directory
+
+```
+sudo python setup.py install
+```
+
+
 Usage
 -----
 
@@ -44,7 +53,7 @@ It is recommended to use configuration file for setup. Please checkout pyh3c.con
 You must run the program with root privilege:
 
 ```bash
-sudo python pyh3c.py
+sudo pyh3c
 ```
 
 If you want to use command line arguments to setup PyH3C, check out -h argument for more information.
