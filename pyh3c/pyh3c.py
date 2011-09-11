@@ -26,14 +26,14 @@ __email__ = "qingping.hou@gmail.com"
 
 _ = i18n.language.lgettext
 
-def p_ser_act(msg):
-  print " [*] %s" % msg
+def ser_act(msg):
+  return " [*] %s" % msg
 
-def p_cli_act(msg):
-  print " [#] %s" % msg
+def cli_act(msg):
+  return " [#] %s" % msg
 
-def p_msg(msg):
-  print " [!] %s" % msg
+def msg(msg):
+  return " [!] %s" % msg
 
 
 eap_code = { 
@@ -201,7 +201,7 @@ class PyH3C:
       eap = RADIUS_H3C.EAP(radius.data)
       print ''
       print _('# Start of dumping debug content #')
-      print _('From %s to %s') % tuple( map(binascii.b2a_hex, (ether.src, ether.dst) ))
+      print 'From %s to %s' % tuple( map(binascii.b2a_hex, (ether.src, ether.dst) ))
       print '%s' % dpkt.hexdump(str(ether), 20)
       print '==== RADIUS ===='
       print 'radius_len: %d' % radius.len
@@ -281,9 +281,9 @@ class PyH3C:
       try:
         self.plugins_loaded.append(getattr(self.h3cStatus.plugins, p_item))
       except AttributeError:
-        p_msg(_('Failed while loading plugin %s.')) % p_item
+        print msg(_('Failed while loading plugin ')) + '%s' % p_item + _('.')
       else:
-        p_msg(_('Plugin [ %s ] loaded.')) % p_item
+        print msg(_('Plugin [ ')) + '%s' % p_item + _('] loaded.')
 
     return
 
@@ -300,7 +300,7 @@ class PyH3C:
   def main(self, callbacks):
     #for initializing
     if not (os.getuid() == 0):
-      p_msg(_('You must run with root privilege!'))
+      print msg(_('You must run with root privilege!'))
       exit(-1)
 
     self.read_args()
@@ -308,7 +308,7 @@ class PyH3C:
       self.kill_instance()
 
     if not self.set_up_lock():
-      p_msg(_('Only one PyH3C can be ran at the same time!'))
+      print msg(_('Only one PyH3C can be ran at the same time!'))
       exit(-1)
     atexit.register(self.clean_up)
 
@@ -364,7 +364,7 @@ class PyH3C:
         hander_callback = "%s_callback" % handler
         getattr(self,handler)(ether, callbacks[hander_callback])
 
-    p_msg(_('PyH3C exits!'))
+    print msg(_('PyH3C exits!'))
     return
 
 
@@ -375,32 +375,32 @@ if __name__ == "__main__":
   def hello_world(pyh3c):
     print ''
     print ' === PyH3C %s ===' % __version__
-    p_ser_act(_('Activities from server.'))
-    p_cli_act(_('Activities from client.'))
-    p_msg(_('Messages you may want to read.'))
+    print ser_act(_('Activities from server.'))
+    print cli_act(_('Activities from client.'))
+    print msg(_('Messages you may want to read.'))
     print ''
-    p_msg(_('Using user name: %s')) % pyh3c.h3cStatus.user_name
-    p_msg(_('Using interface: %s')) % pyh3c.h3cStatus.dev
-    p_msg(_('Using DHCP script: %s')) % pyh3c.h3cStatus.dhcp_command
+    print msg(_('Using user name: ')) + '%s' % pyh3c.h3cStatus.user_name
+    print msg(_('Using interface: ')) + '%s' % pyh3c.h3cStatus.dev
+    print msg(_('Using DHCP script: ')) + '%s' % pyh3c.h3cStatus.dhcp_command
     print ''
     return 
 
   def send_start_callback(pyh3c):
-    p_ser_act(_('Sent out authentication request.'))
+    print ser_act(_('Sent out authentication request.'))
 
   def identity_handler_callback(ether, pyh3c):
     if pyh3c.h3cStatus.auth_success:
-      p_ser_act(_('Received server check online request, sent response packet.'))
+      print ser_act(_('Received server check online request, sent response packet.'))
     else:
-      p_ser_act(_('Received identity challenge request.'))
-      p_cli_act(_('Sent identity challenge response.'))
+      print ser_act(_('Received identity challenge request.'))
+      print cli_act(_('Sent identity challenge response.'))
 
   def h3c_unknown_handler_callback(ether, pyh3c):
-    p_ser_act(_('Received unknown h3c response from server.'))
+    print ser_act(_('Received unknown h3c response from server.'))
 
   def allocated_handler_callback(ether, pyh3c):
-    p_ser_act(_('Received allocated challenge request.'))
-    p_cli_act(_('Sent allocated challenge response.'))
+    print ser_act(_('Received allocated challenge request.'))
+    print cli_act(_('Sent allocated challenge response.'))
 
   def success_handler_callback(ether, pyh3c):
     print ''
@@ -413,40 +413,40 @@ if __name__ == "__main__":
     dhcp_command = "%s %s" % (pyh3c.h3cStatus.dhcp_command, pyh3c.h3cStatus.dev)
     #@TODO@: use subprocess here
     (status, output) = commands.getstatusoutput(dhcp_command)
-    p_cli_act(_('running command: %s to get an IP.')) % dhcp_command
+    print cli_act(_('running command: ')) + '%s' % dhcp_command + _('to get an IP.')
     print ''
     print output
     print ''
 
-    p_msg(_('Every thing is done now, happy surfing the Internet.')) 
-    p_msg(_('I will send heart beat packets to keep you online.')) 
+    print msg(_('Every thing is done now, happy surfing the Internet.')) 
+    print msg(_('I will send heart beat packets to keep you online.')) 
 
   def failure_handler_callback(ether, pyh3c):
-    p_ser_act(_('Received authentication failed packet from server.'))
+    print ser_act(_('Received authentication failed packet from server.'))
     radius = RADIUS_H3C(ether.data)
     eap = RADIUS_H3C.EAP(radius.data)
     error = eap.data[1:7]
     try:
-      p_ser_act(_('Error code: \"%s\", %s') % (error, error_code[error]))
+      print ser_act(_('Error code: ')) + '\"%s\", %s' % (error, error_code[error])
     except KeyError:
-      p_ser_act(_('Error code: \"%s\", %s' % (binascii.b2a_hex(error), 'Unknown error code!')))
+      print ser_act(_('Error code: ')) + '\"%s\", %s' % (binascii.b2a_hex(error), 'Unknown error code!')
       print _('     Please fire a bug report at:')
-      print _('     https://github.com/houqp/pyh3c/issues')
-    print p_cli_act(_('Try to restart the authentication in one second.'))
+      print '     https://github.com/houqp/pyh3c/issues'
+    print cli_act(_('Try to restart the authentication in one second.'))
     sleep(1)
     pyh3c.send_start(send_start_callback)
   
   def wtf_handler_callback(ether, pyh3c, eap):
-    p_msg(_('Encountered an unknown packet!'))
-    p_msg('----------------------------------------')
+    print msg(_('Encountered an unknown packet!'))
+    print msg('----------------------------------------')
     print ''
     pyh3c.debug_packets(ether)
     print ''
     print _(' * It may be sent from some aliens, please help improve')
     print _('   software by fire a bug report at:')
-    print _('   https://github.com/houqp/pyh3c/issues')
+    print '   https://github.com/houqp/pyh3c/issues'
     print _('   Also remember to paste the above output in your report.')
-    p_msg('----------------------------------------')
+    print msg('----------------------------------------')
 
 
   callbacks = {
