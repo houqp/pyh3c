@@ -1,5 +1,5 @@
-# -*- coding:utf8 -*-
 #!/usr/bin/env python
+# -*- coding:utf8 -*-
 
 __author__ = "houqp"
 __license__ = "GPL"
