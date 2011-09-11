@@ -44,11 +44,11 @@ class H3C_STATUS():
     load configuration file
     """
     if not self.parser.read( ('pyh3c.conf')):
-      print _('')
+      print ''
       p_msg(_('No configuration file found!'))
       p_msg(_('Please answer following question to setup '))
       print _('     the configuration file: ')
-      print _('')
+      print ''
       self.create_config()
       return
 
@@ -131,34 +131,34 @@ class H3C_STATUS():
       intf = libdnet.intf()
       def print_dev(dict, arg):
         if not dict['name'] == 'lo':
-          print _(' * %s') % dict['name']
+          print ' * %s' % dict['name']
         return
       print _('Devices that you can choose are:')
       intf.loop(print_dev)
-      print _('')
-      print _(' - Most of the time, eth0 is the correct choice.')
+      print ''
+      print _(' - Generally, eth0 is the right choice for GNU/Linux users.')
       print _(' - If you are using wireless network, than you may need')
       print _('   to choose wlan0 or something like that.')
-      print _('')
+      print ''
       self.dev = raw_input('Please input the device you want to use: ')
-      print _('------')
+      print '------'
 
     if not self.user_name:
       self.user_name = raw_input('Please input the user name of your account: ')
-      print _('------')
+      print '------'
 
     if not self.user_pass:
       self.user_pass = raw_input('Please input the password of your account: ')
-      print _('------')
+      print '------'
 
     if not self.dhcp_command:
       self.dhcp_command = raw_input('Please input the command you use to acquire ip with DHCP: ')
-      print _('------')
+      print '------'
     
     if not self.ping_target:
       print _('To disable online status checking, just type \"none\".')
       self.ping_target = raw_input('Please input the target ip you want to ping for online checking: ')
-      print _('------')
+      print '------'
 
     self.save_config()
     return 

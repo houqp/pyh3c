@@ -199,25 +199,25 @@ class PyH3C:
       #print 'Ethernet II type:%s' % hex(ether.type)
       radius = RADIUS_H3C(ether.data)
       eap = RADIUS_H3C.EAP(radius.data)
-      print _('')
-      print _('# Start of dump content #')
-      print 'From %s to %s' % tuple( map(binascii.b2a_hex, (ether.src, ether.dst) ))
-      print _('%s') % dpkt.hexdump(str(ether), 20)
-      print _('==== RADIUS ====')
-      print _('radius_len: %d') % radius.len
-      #print _('======== EAP_HDR ========')
-      #print _('%s') % dpkt.hexdump(str(eap), 20)
-      #print _('server_response: %s') % eap_code[eap.code]
-      print _('eap_code: %d') % eap.code
-      print _('eap_id: %d') % eap.id
-      print _('eap_len: %d') % eap.len
-      print _('eap_type: %d') % eap.type
+      print ''
+      print _('# Start of dumping debug content #')
+      print _('From %s to %s') % tuple( map(binascii.b2a_hex, (ether.src, ether.dst) ))
+      print '%s' % dpkt.hexdump(str(ether), 20)
+      print '==== RADIUS ===='
+      print 'radius_len: %d' % radius.len
+      #print '======== EAP_HDR ========'
+      #print '%s' % dpkt.hexdump(str(eap), 20)
+      #print 'server_response: %s' % eap_code[eap.code]
+      print 'eap_code: %d' % eap.code
+      print 'eap_id: %d' % eap.id
+      print 'eap_len: %d' % eap.len
+      print 'eap_type: %d' % eap.type
         #@must handle failure here
       #print _('eap_type: %s') % eap_type[eap.type] 
-      print _('======== EAP DATA ========')
-      print _('%s') % dpkt.hexdump(eap.data, 20)
-      print _('# End of dump content #')
-      print _('')
+      print '======== EAP DATA ========'
+      print '%s' % dpkt.hexdump(eap.data, 20)
+      print _('# End of dumping debug content #')
+      print ''
 
   def set_up_lock(self):
     """
@@ -373,16 +373,16 @@ if __name__ == "__main__":
   pyh3c = PyH3C()
 
   def hello_world(pyh3c):
-    print _('')
-    print _(' === PyH3C %s ===') % __version__
+    print ''
+    print ' === PyH3C %s ===' % __version__
     p_ser_act(_('Activities from server.'))
     p_cli_act(_('Activities from client.'))
     p_msg(_('Messages you may want to read.'))
-    print _('')
+    print ''
     p_msg(_('Using user name: %s')) % pyh3c.h3cStatus.user_name
     p_msg(_('Using interface: %s')) % pyh3c.h3cStatus.dev
     p_msg(_('Using DHCP script: %s')) % pyh3c.h3cStatus.dhcp_command
-    print _('')
+    print ''
     return 
 
   def send_start_callback(pyh3c):
@@ -403,20 +403,20 @@ if __name__ == "__main__":
     print _('     [#] Sent allocated challenge response.')
 
   def success_handler_callback(ether, pyh3c):
-    print _('')
-    print _('  /---------------------------------------------\ ')
+    print ''
+    print   '  /---------------------------------------------\ '
     print _(' | [^_^] Successfully passed the authentication! |')
-    print _('  \---------------------------------------------/ ')
-    print _('')
+    print   '  \---------------------------------------------/ '
+    print ''
 
     #@TODO: check operating system here
     dhcp_command = "%s %s" % (pyh3c.h3cStatus.dhcp_command, pyh3c.h3cStatus.dev)
     #@TODO@: use subprocess here
     (status, output) = commands.getstatusoutput(dhcp_command)
     p_cli_act(_('running command: %s to get an IP.')) % dhcp_command
-    print _('')
+    print ''
     print output
-    print _('')
+    print ''
 
     p_msg(_('Every thing is done now, happy surfing the Internet.')) 
     p_msg(_('I will send heart beat packets to keep you online.')) 
@@ -438,15 +438,15 @@ if __name__ == "__main__":
   
   def wtf_handler_callback(ether, pyh3c, eap):
     p_msg(_('Encountered an unknown packet!'))
-    p_msg(_('----------------------------------------'))
-    print _('')
+    p_msg('----------------------------------------')
+    print ''
     pyh3c.debug_packets(ether)
-    print _('')
+    print ''
     print _(' * It may be sent from some aliens, please help improve')
     print _('   software by fire a bug report at:')
     print _('   https://github.com/houqp/pyh3c/issues')
     print _('   Also remember to paste the above output in your report.')
-    p_msg(_('----------------------------------------'))
+    p_msg('----------------------------------------')
 
 
   callbacks = {
