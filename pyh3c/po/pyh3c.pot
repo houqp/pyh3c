@@ -1,0 +1,190 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-09-11 09:28+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../h3cStatus.py:48
+msgid "No configuration file found!"
+msgstr ""
+
+#: ../h3cStatus.py:49
+msgid "Please answer following question to setup "
+msgstr ""
+
+#: ../h3cStatus.py:50
+msgid "     the configuration file: "
+msgstr ""
+
+#: ../h3cStatus.py:136
+msgid "Devices that you can choose are:"
+msgstr ""
+
+#: ../h3cStatus.py:139
+msgid " - Generally, eth0 is the right choice for GNU/Linux users."
+msgstr ""
+
+#: ../h3cStatus.py:140
+msgid " - If you are using wireless network, than you may need"
+msgstr ""
+
+#: ../h3cStatus.py:141
+msgid "   to choose wlan0 or something like that."
+msgstr ""
+
+#: ../h3cStatus.py:159
+msgid "To disable online status checking, just type \"none\"."
+msgstr ""
+
+#: ../pyh3c.py:203
+msgid "# Start of dumping debug content #"
+msgstr ""
+
+#: ../pyh3c.py:219
+msgid "# End of dumping debug content #"
+msgstr ""
+
+#: ../pyh3c.py:284
+msgid "Failed while loading plugin "
+msgstr ""
+
+#: ../pyh3c.py:284
+msgid "."
+msgstr ""
+
+#: ../pyh3c.py:286
+msgid "Plugin [ "
+msgstr ""
+
+#: ../pyh3c.py:286
+msgid "] loaded."
+msgstr ""
+
+#: ../pyh3c.py:303
+msgid "You must run with root privilege!"
+msgstr ""
+
+#: ../pyh3c.py:311
+msgid "Only one PyH3C can be ran at the same time!"
+msgstr ""
+
+#: ../pyh3c.py:367
+msgid "PyH3C exits!"
+msgstr ""
+
+#: ../pyh3c.py:378
+msgid "Activities from server."
+msgstr ""
+
+#: ../pyh3c.py:379
+msgid "Activities from client."
+msgstr ""
+
+#: ../pyh3c.py:380
+msgid "Messages you may want to read."
+msgstr ""
+
+#: ../pyh3c.py:382
+msgid "Using user name: "
+msgstr ""
+
+#: ../pyh3c.py:383
+msgid "Using interface: "
+msgstr ""
+
+#: ../pyh3c.py:384
+msgid "Using DHCP script: "
+msgstr ""
+
+#: ../pyh3c.py:389
+msgid "Sent out authentication request."
+msgstr ""
+
+#: ../pyh3c.py:393
+msgid "Received server check online request, sent response packet."
+msgstr ""
+
+#: ../pyh3c.py:395
+msgid "Received identity challenge request."
+msgstr ""
+
+#: ../pyh3c.py:396
+msgid "Sent identity challenge response."
+msgstr ""
+
+#: ../pyh3c.py:399
+msgid "Received unknown h3c response from server."
+msgstr ""
+
+#: ../pyh3c.py:402
+msgid "Received allocated challenge request."
+msgstr ""
+
+#: ../pyh3c.py:403
+msgid "Sent allocated challenge response."
+msgstr ""
+
+#: ../pyh3c.py:408
+msgid " | [^_^] Successfully passed the authentication! |"
+msgstr ""
+
+#: ../pyh3c.py:416
+msgid "running command: "
+msgstr ""
+
+#: ../pyh3c.py:416
+msgid "to get an IP."
+msgstr ""
+
+#: ../pyh3c.py:421
+msgid "Every thing is done now, happy surfing the Internet."
+msgstr ""
+
+#: ../pyh3c.py:422
+msgid "I will send heart beat packets to keep you online."
+msgstr ""
+
+#: ../pyh3c.py:425
+msgid "Received authentication failed packet from server."
+msgstr ""
+
+#: ../pyh3c.py:430 ../pyh3c.py:432
+msgid "Error code: "
+msgstr ""
+
+#: ../pyh3c.py:433
+msgid "     Please fire a bug report at:"
+msgstr ""
+
+#: ../pyh3c.py:435
+msgid "Try to restart the authentication in one second."
+msgstr ""
+
+#: ../pyh3c.py:440
+msgid "Encountered an unknown packet!"
+msgstr ""
+
+#: ../pyh3c.py:445
+msgid " * It may be sent from some aliens, please help improve"
+msgstr ""
+
+#: ../pyh3c.py:446
+msgid "   software by fire a bug report at:"
+msgstr ""
+
+#: ../pyh3c.py:448
+msgid "   Also remember to paste the above output in your report."
+msgstr ""
