@@ -5,4 +5,4 @@ PyH3C
 
 I have written a ebuild for **Gentoo** users, you can download it [here](#).
 
-For more information, Please checkout the [readme page](https://github.com/houqp/pyh3c/blob/master/README.md) on github.
+For more information, Please read the README below or checkout the [readme page](https://github.com/houqp/pyh3c/blob/master/README.md) on github.
