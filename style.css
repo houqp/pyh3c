@@ -19,3 +19,24 @@ a {
 a:hover {
   color:#781A1A;
 }
+
+#readme {
+  padding-left:1em;
+  border-left:solid #A2B769 1.5em;
+}
+
+#readme h1{
+  color:#4E6B19;
+}
+
+#readme h1:before {
+  content:"ReadMe! ";
+  color:#A2B769;
+}
+
+code {
+  padding:0.1em 0.2em;
+  background-color:#415914;
+}
+
+
