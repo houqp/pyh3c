@@ -15,7 +15,7 @@ __email__ = "qingping.hou@gmail.com"
 
 _ = i18n.language.lgettext
 
-class H3C_STATUS():
+class H3CStatus():
   def __init__(self):
     self.dev = ""
     self.cli_hwadd = ""

@@ -63,7 +63,7 @@ error_code = {
 
 class PyH3C:
   def __init__(self):
-    self.h3cStatus = H3C_STATUS()
+    self.h3cStatus = H3CStatus()
     self.plugins_loaded = []
     self.lock_file = "/tmp/pyh3c.lock"
 
