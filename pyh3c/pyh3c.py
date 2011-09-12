@@ -246,28 +246,28 @@ class PyH3C:
     desc = "PyH3C - A H3C client written in Python."
     parser = argparse.ArgumentParser(description=desc)
 
-    parser.add_argument('-u', '--user', type=str, \
-        metavar='user_name', dest='user_name', action='store', \
+    parser.add_argument('-u', '--user', type=str, 
+        metavar='user_name', dest='user_name', action='store', 
         help="User name for your account.")
 
-    parser.add_argument('-p', '--pass', type=str, \
-        metavar='password', dest='user_pass', action='store', \
+    parser.add_argument('-p', '--pass', type=str, 
+        metavar='password', dest='user_pass', action='store', 
         help="Password for your account.")
 
-    parser.add_argument('-D', '--dhcp', type=str, \
-        metavar='dhcp_command', dest='dhcp_command', action='store', \
+    parser.add_argument('-D', '--dhcp', type=str, 
+        metavar='dhcp_command', dest='dhcp_command', action='store', 
         help="DHCP command for acquiring IP after authentication.")
 
-    parser.add_argument('-d', '--dev', type=str, \
-        metavar='dev', dest='dev', action='store', \
+    parser.add_argument('-d', '--dev', type=str, 
+        metavar='dev', dest='dev', action='store', 
         help="Ethernet interface used to connect to the internet.")
 
-    parser.add_argument('-g', '--debug', \
-        dest='debug_on', action='store_true', \
+    parser.add_argument('-g', '--debug', 
+        dest='debug_on', action='store_true', 
         help="Turn on debug to see dump content.")
 
-    parser.add_argument('-k', '--kill', \
-        dest='kill_on', action='store_true', \
+    parser.add_argument('-k', '--kill', 
+        dest='kill_on', action='store_true', 
         help="If there is another PyH3C instance running, kill it before start.")
 
     args = parser.parse_args(namespace=self.h3cStatus)

@@ -108,8 +108,8 @@ class H3CStatus():
     try:
       self.new_plugins = self.parser.get('sys_conf', 'plugins')
       if self.new_plugins:
-        self.plugins_to_load.extend( \
-            self.new_plugins.replace(' ','').split(',') \
+        self.plugins_to_load.extend( 
+            self.new_plugins.replace(' ','').split(',') 
         )
     except ConfigParser.NoOptionError:
       pass
