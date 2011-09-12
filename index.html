@@ -9,13 +9,92 @@
     <img alt='Fork me on GitHub' class='github' src='http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png' style='position: absolute; top: 0; right: 0; border: 0;' />
   </a>
 
+  <div id="main">
 <h1>PyH3C</h1>
 
 <p><strong>Page under construction!</strong></p>
 
 <p>I have written a ebuild for <strong>Gentoo</strong> users, you can download it <a href="#">here</a>.</p>
 
-<p>For more information, Please checkout the <a href="https://github.com/houqp/pyh3c/blob/master/README.md">readme page</a> on github.</p>
+<p>For more information, Please read the README below or checkout the <a href="https://github.com/houqp/pyh3c/blob/master/README.md">readme page</a> on github.</p>
+  </div>
+
+  <div id="readme">
+<h1>PyH3C</h1>
+
+<p>PyH3C is a program for passing h3c authentication in SYSU east campus.</p>
+
+<p>Currently, python 3 is not supported. Also Windows operating system is not supported because I do not know how to acquire IP under this user friendly system. ;-P</p>
+
+<h2>Dependencies</h2>
+
+<p>You need to install <code>dpkt</code>, <code>libdnet</code>, <code>argparse</code> and <code>pypcap</code> library before you run the program.</p>
+
+<p>So for <strong>Ubuntu</strong> users:</p>
+
+<p><code>bash
+$ sudo apt-get install python-pypcap python-dpkt python-dumbnet
+</code></p>
+
+<p>If you're using pyhton with version lower than 2.7, you will also need to install argparse:</p>
+
+<p><code>bash
+$ sudo apt-get install python-argparse
+</code></p>
+
+<p>For <strong>Gentoo</strong> users:</p>
+
+<p><code>bash
+$ emerge pypcap dpkt libdnet 
+</code></p>
+
+<p>If you're using pyhton with version lower than 2.7, you will also need to install argparse:</p>
+
+<p><code>bash
+$ emerge argparse
+</code></p>
+
+<p>For <strong>ArchLinux</strong> users: </p>
+
+<p>You should first have <code>AUR</code> correctly configured and install <code>yaourt</code>(there's no reason not to use it, XD), then,</p>
+
+<p><code>bash
+$ yaourt -S pypcap-svn dpkt libdnet
+</code></p>
+
+<p>Sorry for coming along with lots of dependencies. :-( I will clean this up when I have time.</p>
+
+<h2>Installation</h2>
+
+<p>Run the <code>setup.py</code> script which is contained in this program's directory</p>
+
+<p><code>bash
+$ sudo python setup.py install
+</code></p>
+
+<h2>Usage</h2>
+
+<p>It is recommended to use configuration file for setup. Please checkout pyh3c.conf.example for examples.</p>
+
+<p>You must run the program with root privilege:</p>
+
+<p><code>bash
+$ sudo pyh3c
+</code></p>
+
+<p>If you want to use command line arguments to setup PyH3C, check out -h argument for more information.</p>
+
+<h2>Plugins</h2>
+
+<p>PyH3C comes with a simple plugin system. For more instructions on writing plugins, please checkout the template file under <em>plugins</em> directory.</p>
+
+<h2>Contributing</h2>
+
+<p>Any contribution is welcome.</p>
+
+<p>It will be great if you can help me make it a better software.</p>
+  </div>
+
 
 </body>
 </html>
