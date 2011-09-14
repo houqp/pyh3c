@@ -60,6 +60,8 @@ Usage
 
 It is recommended to use configuration file for setup. Please checkout pyh3c.conf.example for examples.
 
+PyH3C use `pyh3c.conf` as configuration file and it should be put in /etc/
+
 You must run the program with root privilege:
 
 ```bash

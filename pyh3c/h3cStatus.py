@@ -43,7 +43,7 @@ class H3CStatus():
     """
     load configuration file
     """
-    if not self.parser.read( ('pyh3c.conf')):
+    if not self.parser.read( ('/etc/pyh3c.conf')):
       print ''
       msg(_('No configuration file found!'))
       msg(_('Please answer following question to setup '))
@@ -171,9 +171,9 @@ class H3CStatus():
       self.parser = ConfigParser.SafeConfigParser()
 
     #try:
-      #fp = open('pyh3c.conf', 'r+')
+      #fp = open('/etc/pyh3c.conf', 'r+')
     #except IOError:
-      #fp = open('pyh3c.conf', 'w')
+      #fp = open('/etc/pyh3c.conf', 'w')
 
     if not self.parser.has_section('sys_conf'):
       self.parser.add_section('sys_conf')
@@ -192,10 +192,10 @@ class H3CStatus():
     #ConfigParser module will delete all comments, here is a dirty hack
     #@TODO@: fix the ConfigParser module, or use cfgparse module
     try:
-      os.unlink('pyh3c.conf')
+      os.unlink('/etc/pyh3c.conf')
     except OSError:
       pass
-    fp = open('pyh3c.conf', 'w')
+    fp = open('/etc/pyh3c.conf', 'w')
     self.parser.write(fp)
     fp = fp.close()
     return 
