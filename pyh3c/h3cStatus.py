@@ -5,7 +5,6 @@ import ConfigParser
 import os
 
 import i18n
-from i18n import *
 from pyh3c import msg
 
 __author__ = "houqp"
