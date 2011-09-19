@@ -54,6 +54,12 @@ Run the `setup.py` script which is contained in this program's directory
 $ sudo python setup.py install
 ```
 
+If you need Chinese translation, issue following command:
+
+```bash
+$ cd pyh3c/po && sudo make install
+```
+
 
 Usage
 -----
