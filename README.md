@@ -54,11 +54,19 @@ Run the `setup.py` script which is contained in this program's directory
 $ sudo python setup.py install
 ```
 
+If you need Chinese translation, issue following command:
+
+```bash
+$ cd pyh3c/po && sudo make install
+```
+
 
 Usage
 -----
 
 It is recommended to use configuration file for setup. Please checkout pyh3c.conf.example for examples.
+
+PyH3C use `pyh3c.conf` as configuration file and it should be put in /etc/
 
 You must run the program with root privilege:
 
