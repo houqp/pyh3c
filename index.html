@@ -71,9 +71,17 @@ $ yaourt -S pypcap-svn dpkt libdnet
 $ sudo python setup.py install
 </code></p>
 
+<p>If you need Chinese translation, issue following command:</p>
+
+<p><code>bash
+$ cd pyh3c/po &amp;&amp; sudo make install
+</code></p>
+
 <h2>Usage</h2>
 
 <p>It is recommended to use configuration file for setup. Please checkout pyh3c.conf.example for examples.</p>
+
+<p>PyH3C use <code>pyh3c.conf</code> as configuration file and it should be put in /etc/</p>
 
 <p>You must run the program with root privilege:</p>
 

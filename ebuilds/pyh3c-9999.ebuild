@@ -36,3 +36,8 @@ src_prepare() {
 	git checkout developing
 }
 
+src_install() {
+	distutils_src_install
+	cd pyh3c/po && emake  DESTDIR="${D}usr/share/locale" install || die "failed to install translations."
+}
+
