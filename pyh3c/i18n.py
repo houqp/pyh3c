@@ -12,7 +12,8 @@ DEFAULT_LANGUAGES = os.environ.get('LANG', '').split(':')
 #LANG = ['zh_CN']
 LANG = DEFAULT_LANGUAGES
 APP_NAME = 'pyh3c'
-LOCALE_DIR = './i18n'
+#LOCALE_DIR = './i18n'
+LOCALE_DIR = '/usr/share/locale'
 
 gettext.install(APP_NAME)
 gettext.find(APP_NAME, LOCALE_DIR, LANG)

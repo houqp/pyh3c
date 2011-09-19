@@ -4,6 +4,16 @@ DOMAIN = pyh3c
 
 all:update-po mo
 
+install:
+	for po in *.po; do \
+		lingua=`basename $$po .po` ; \
+		msgfmt -o $$lingua.mo $$po ; \
+		cp $$lingua.mo /usr/share/locale/$$lingua/LC_MESSAGES/$(DOMAIN).mo; \
+	done
+
+uninstall:
+	find /usr/share/locale/ -iname pyh3c.mo | xargs rm
+
 update-po:pot
 	for po in *.po; do \
 		lingua=`basename $$po .po`; \
