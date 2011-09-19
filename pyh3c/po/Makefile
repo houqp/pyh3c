@@ -9,6 +9,7 @@ install:
 	for po in *.po; do \
 		lingua=`basename $$po .po` ; \
 		msgfmt -o $$lingua.mo $$po ; \
+		test -d $(DESTDIR)/$$lingua/LC_MESSAGES || mkdir -p $(DESTDIR)/$$lingua/LC_MESSAGES/ ; \
 		cp $$lingua.mo $(DESTDIR)/$$lingua/LC_MESSAGES/$(DOMAIN).mo; \
 	done
 
