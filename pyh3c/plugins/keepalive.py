@@ -7,7 +7,7 @@ from time import sleep
 
 __author__ = "houqp"
 __license__ = "GPL"
-__version__ = "0.6"
+__version__ = "0.6.1"
 __maintainer__ = "houqp"
 __email__ = "qingping.hou@gmail.com"
 
