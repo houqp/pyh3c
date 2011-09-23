@@ -90,17 +90,17 @@ class H3CStatus():
       self.create_config()
 
     try:
-      self.ping_interval = self.parser.get('sys_conf', 'ping_interval')
+      self.ping_interval = float(self.parser.get('sys_conf', 'ping_interval'))
     except ConfigParser.NoOptionError:
       pass
 
     try:
-      self.ping_tolerence = self.parser.get('sys_conf', 'ping_tolerence')
+      self.ping_tolerence = float(self.parser.get('sys_conf', 'ping_tolerence'))
     except ConfigParser.NoOptionError:
       pass
 
     try:
-      self.ping_after_reauth = self.parser.get('sys_conf', 'ping_after_reauth')
+      self.ping_after_reauth = float(self.parser.get('sys_conf', 'ping_after_reauth'))
     except ConfigParser.NoOptionError:
       pass
 
