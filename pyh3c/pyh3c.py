@@ -71,6 +71,7 @@ class PyH3C:
     """
     Method that do nothing.
     """
+    pass
 
   def send_start(self, callback=do_nothing, data=None):
     """
@@ -90,10 +91,8 @@ class PyH3C:
       getattr(plugin, 'before_auth')(self)
 
     self.sender.send(str(start_packet))
-    if data:
-      callback(self, data)
-    else:
-      callback(self)
+
+    self.callback_caller(callback, data)
 
   def logoff(self, callback=do_nothing, data=None):
     """
@@ -101,6 +100,7 @@ class PyH3C:
     """
     logoff_radius = pack_radius(0x01, 0x02)
     logoff_packet = pack_ether(self.h3cStatus.cli_hwadd, self.h3cStatus.ser_hwadd, logoff_radius)
+
     self.sender.send(str(logoff_packet))
 
   def identity_handler(self, ether, callback=do_nothing, data=None):
@@ -113,11 +113,10 @@ class PyH3C:
     identity_eap = pack_eap(0x02, eap.id, 0x01, self.h3cStatus.user_name)
     identity_radius = pack_radius(0x01, 0x00, identity_eap)
     identity_packet = pack_ether(self.h3cStatus.cli_hwadd, self.h3cStatus.ser_hwadd, identity_radius)
+
     self.sender.send(str(identity_packet))
-    if data:
-      callback(ether, self, data)
-    else:
-      callback(ether, self)
+
+    self.callback_caller(callback, data)
 
   def allocated_handler(self, ether, callback=do_nothing, data=None):
     """ 
@@ -129,11 +128,10 @@ class PyH3C:
     allocated_eap = pack_eap(0x02, eap.id, 0x07, auth_data)
     allocated_radius = pack_radius(0x01, 0x00, allocated_eap)
     allocated_packet = pack_ether(self.h3cStatus.cli_hwadd, self.h3cStatus.ser_hwadd, allocated_radius)
+
     self.sender.send(str(allocated_packet))
-    if data:
-      callback(ether, self, data)
-    else:
-      callback(ether, self)
+
+    self.callback_caller(callback, data)
 
   def success_handler(self, ether, callback=do_nothing, data=None):
     """
@@ -141,10 +139,7 @@ class PyH3C:
     """
     self.h3cStatus.auth_success = True
 
-    if data:
-      callback(ether, self, data)
-    else:
-      callback(ether, self)
+    self.callback_caller(callback, data)
 
     #call after_auth_succ functions registered by plugins
     for plugin in self.plugins_loaded:
@@ -154,30 +149,22 @@ class PyH3C:
     """
     handler for h3c specific
     """
-    if data:
-      callback(ether, self, data)
-    else:
-      callback(ether, self)
+    self.callback_caller(callback, data)
 
   def failure_handler(self, ether, callback=do_nothing, data=None):
     """
     handler for failed authentication
     """
     self.h3cStatus.auth_success = False
-    if data:
-      callback(ether, self, data)
-    else:
-      callback(ether, self)
+
+    self.callback_caller(callback, data)
 
     #call after_auth_succ functions registered by plugins
     for plugin in self.plugins_loaded:
       getattr(plugin, 'after_auth_fail')(self)
 
   def wtf_handler(self, ether, callback=do_nothing, data=None):
-    if not data:
-      callback(ether, self)
-    else:
-      callback(ether, self, data)
+    self.callback_caller(callback, data)
 
   def get_devices(self):
     """
@@ -296,6 +283,12 @@ class PyH3C:
     fd.close()
     subprocess.Popen(["kill", "-9", pid])
     os.unlink(self.lock_file)
+
+  def callback_caller(self, callback, data=None):
+    if data:
+      callback(self, data)
+    else:
+      callback(self)
 
   def main(self, callbacks):
     #for initializing
