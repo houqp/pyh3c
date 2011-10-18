@@ -313,7 +313,10 @@ class PyH3C:
         try:
             libdnet = __import__('dnet')
         except ImportError:
-            libdnet = __import__('dumbnet')
+            try:
+                libdnet = __import__('dumbnet')
+            except ImportError:
+                print msg(_('Failed loading dnet library, please install it first.'))
         self.sender = libdnet.eth(self.h3cStatus.dev)
         self.h3cStatus.cli_hwadd = self.sender.get()
 
