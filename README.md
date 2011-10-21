@@ -13,25 +13,25 @@ You need to install `libdnet` and `pypcap` library before you run the program.
 So for **Ubuntu** users:
 
 ```bash
-$ sudo apt-get install python-pypcap python-dumbnet
+# apt-get install python-pypcap python-dumbnet
 ```
 
 If you're using pyhton with version lower than 2.7, you will also need to install argparse:
 
 ```bash
-$ sudo apt-get install python-argparse
+# apt-get install python-argparse
 ```
 
 For **Gentoo** users:
 
 ```bash
-$ emerge pypcap libdnet 
+# emerge pypcap libdnet 
 ```
 
 If you're using pyhton with version lower than 2.7, you will also need to install argparse:
 
 ```bash
-$ emerge argparse
+# emerge argparse
 ```
 
 For **ArchLinux** users: 
@@ -39,7 +39,7 @@ For **ArchLinux** users:
 You should first have `AUR` correctly configured and install `yaourt`(there's no reason not to use it, XD), then,
 
 ```bash
-$ yaourt -S pypcap-svn libdnet
+# yaourt -S pypcap-svn libdnet
 ```
 
 Sorry for coming along with lots of dependencies. :-( I will clean this up when I have time.
