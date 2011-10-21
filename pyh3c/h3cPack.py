@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-import dpkt
+import dpktMini
 
 from h3cRadius import *
 
@@ -18,7 +18,7 @@ def pack_ether(_src, _dst, _radius):
     _dst is the destination address of the frame, in binary
     _radius is a RADIUS_H3C object, not a string
     """
-    _ether = dpkt.ethernet.Ethernet(
+    _ether = dpktMini.ethernet.Ethernet(
                 src = _src,
                 dst = _dst,
                 type = 0x888e,

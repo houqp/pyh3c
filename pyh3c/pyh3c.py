@@ -2,7 +2,6 @@
 # -*- coding:utf-8 -*-
 
 import pcap
-import dpkt
 import binascii
 import commands
 import subprocess
@@ -15,11 +14,12 @@ import i18n
 from h3cRadius import *
 from h3cPack import *
 from h3cStatus import *
+import dpktMini
 import plugins
 
 __author__ = "houqp"
 __license__ = "GPL"
-__version__ = "0.8.0"
+__version__ = "0.8.1"
 __maintainer__ = "houqp"
 __email__ = "qingping.hou@gmail.com"
 
@@ -189,11 +189,11 @@ class PyH3C:
             print ''
             print _('# Start of dumping debug content #')
             print 'From %s to %s' % tuple( map(binascii.b2a_hex, (ether.src, ether.dst) ))
-            print '%s' % dpkt.hexdump(str(ether), 20)
+            print '%s' % dpktMini.hexdump(str(ether), 20)
             print '==== RADIUS ===='
             print 'radius_len: %d' % radius.len
             #print '======== EAP_HDR ========'
-            #print '%s' % dpkt.hexdump(str(eap), 20)
+            #print '%s' % dpktMini.hexdump(str(eap), 20)
             #print 'server_response: %s' % eap_code[eap.code]
             print 'eap_code: %d' % eap.code
             print 'eap_id: %d' % eap.id
@@ -202,7 +202,7 @@ class PyH3C:
                 #@must handle failure here
             #print _('eap_type: %s') % eap_type[eap.type] 
             print '======== EAP DATA ========'
-            print '%s' % dpkt.hexdump(eap.data, 20)
+            print '%s' % dpktMini.hexdump(eap.data, 20)
             print _('# End of dumping debug content #')
             print ''
 
@@ -330,7 +330,7 @@ class PyH3C:
         self.send_start(callbacks["send_start_callback"])
 
         for ptime,pdata in pc:
-            ether = dpkt.ethernet.Ethernet(pdata)
+            ether = dpktMini.ethernet.Ethernet(pdata)
 
             #ignore Packets sent by myself
             if ether.dst == self.h3cStatus.cli_hwadd:

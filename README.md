@@ -8,12 +8,12 @@ Currently, python 3 is not supported. Also Windows operating system is not suppo
 Dependencies
 ------------
 
-You need to install `dpkt`, `libdnet`, `argparse` and `pypcap` library before you run the program.
+You need to install `libdnet` and `pypcap` library before you run the program.
 
 So for **Ubuntu** users:
 
 ```bash
-$ sudo apt-get install python-pypcap python-dpkt python-dumbnet
+$ sudo apt-get install python-pypcap python-dumbnet
 ```
 
 If you're using pyhton with version lower than 2.7, you will also need to install argparse:
@@ -25,7 +25,7 @@ $ sudo apt-get install python-argparse
 For **Gentoo** users:
 
 ```bash
-$ emerge pypcap dpkt libdnet 
+$ emerge pypcap libdnet 
 ```
 
 If you're using pyhton with version lower than 2.7, you will also need to install argparse:
@@ -39,7 +39,7 @@ For **ArchLinux** users:
 You should first have `AUR` correctly configured and install `yaourt`(there's no reason not to use it, XD), then,
 
 ```bash
-$ yaourt -S pypcap-svn dpkt libdnet
+$ yaourt -S pypcap-svn libdnet
 ```
 
 Sorry for coming along with lots of dependencies. :-( I will clean this up when I have time.
