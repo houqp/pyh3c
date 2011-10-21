@@ -3,24 +3,29 @@ PyH3C
 
 PyH3C is a program for passing h3c authentication in SYSU east campus.
 
-Currently, python 3 is not supported. Also Windows operating system is not supported because I do not know how to acquire IP under this user friendly system. ;-P
+Currently, python 3 is not supported. Also Windows operating system is not
+supported because I do not know how to acquire IP under this user friendly
+system. ;-P
 
 Dependencies
 ------------
 
-You need to install `libdnet` and `pypcap` library before you run the program.
+You need to install `libdnet` and `pypcap` library before running PyH3C.
 
-So for **Ubuntu** users:
+
+For **Ubuntu** users:
 
 ```bash
 $ apt-get install python-pypcap python-dumbnet
 ```
 
-If you're using pyhton with version lower than 2.7, you will also need to install argparse:
+If you're using pyhton with version lower than 2.7, you will also need to
+install argparse:
 
 ```bash
 $ apt-get install python-argparse
 ```
+
 
 For **Gentoo** users:
 
@@ -28,11 +33,13 @@ For **Gentoo** users:
 $ emerge pypcap libdnet 
 ```
 
-If you're using pyhton with version lower than 2.7, you will also need to install argparse:
+If you're using pyhton with version lower than 2.7, you will also need to
+install argparse:
 
 ```bash
 $ emerge argparse
 ```
+
 
 For **ArchLinux** users: 
 
@@ -64,9 +71,13 @@ $ cd pyh3c/po && sudo make install
 Usage
 -----
 
-It is recommended to use configuration file for setup. Please checkout `pyh3c.conf.example` for examples.
+It is recommended to use configuration file for setup. When you first run
+PyH3C, you will be asked serveral questions for configuration file
+initialzation. If you want to setup manually, please checkout
+`pyh3c.conf.example` for examples.
 
-PyH3C use `pyh3c.conf` as configuration file and it should be put in /etc/
+PyH3C use `pyh3c.conf` as its configuration file which should be put in
+`/etc`.
 
 You must run the program with root privilege:
 
@@ -74,13 +85,15 @@ You must run the program with root privilege:
 $ sudo pyh3c
 ```
 
-If you want to use command line arguments to setup PyH3C, check out -h argument for more information.
+If you want to use command line arguments to setup PyH3C, check out -h
+argument for more information.
 
 
 Plugins
 -------
 
-PyH3C comes with a simple plugin system. For more instructions on writing plugins, please checkout the template file under *plugins* directory.
+PyH3C comes with a simple plugin system. For more instructions on writing
+plugins, please checkout the template file under *plugins* directory.
 
 
 Contributing
