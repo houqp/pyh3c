@@ -57,7 +57,8 @@ error_code = {
         'E63034':'Wrong password',
         'E63035':'Wrong password',
         'E63036':'There is no such a user',
-        'E63022':'Maxium online user number reached!'
+        'E63022':'Maxium online user number reached!',
+        'E63100':'Wrong client version, please upgrade it.'
         }
 
 
