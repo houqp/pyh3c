@@ -15,7 +15,6 @@ from h3cRadius import *
 from h3cPack import *
 from h3cSrvStatus import *
 import dpktMini
-import plugins
 
 __author__ = "houqp"
 __license__ = "GPL"
@@ -66,11 +65,10 @@ error_code = {
         }
 
 
-class PyH3C:
+class PyH3CSrv:
     def __init__(self):
         self.h3cSrvStatus = H3CStatus()
-        self.plugins_loaded = []
-        self.lock_file = "/tmp/pyh3c.lock"
+        self.lock_file = "/tmp/pyh3c_srv.lock"
 
     def do_nothing():
         """
@@ -126,38 +124,6 @@ class PyH3C:
         #self.sender.send(str(allocated_packet))
         self.callback_caller(callback, (ether,auth_re))
 
-    def success_handler(self, ether, callback=do_nothing, data=None):
-        """
-        handler for success
-        """
-        self.h3cSrvStatus.auth_success = True
-
-        self.callback_caller(callback, data)
-
-        #call after_auth_succ functions registered by plugins
-        for plugin in self.plugins_loaded:
-            getattr(plugin, 'after_auth_succ')(self)
-
-    def h3c_unknown_handler(self, ether, callback=do_nothing, data=None):
-        """
-        handler for h3c specific
-        """
-        self.callback_caller(callback, data)
-
-    def failure_handler(self, ether, callback=do_nothing, data=None):
-        """
-        handler for failed authentication
-        """
-        self.h3cSrvStatus.auth_success = False
-
-        self.callback_caller(callback, data)
-
-        #call after_auth_succ functions registered by plugins
-        for plugin in self.plugins_loaded:
-            getattr(plugin, 'after_auth_fail')(self)
-
-    def wtf_handler(self, ether, callback=do_nothing, data=None):
-        self.callback_caller(callback, data)
 
     def get_devices(self):
         """
@@ -201,7 +167,7 @@ class PyH3C:
 
     def set_up_lock(self):
         """
-        Setup lock file in /tmp/pyh3c.lock in which pid is written 
+        Setup lock file in /tmp/pyh3c_srv.lock in which pid is written 
         """
         try:
             lock = open(self.lock_file)
@@ -217,7 +183,6 @@ class PyH3C:
         clean up lock file in /tmp
         """
         os.unlink(self.lock_file)
-        return
 
     def read_args(self):
         """
@@ -225,18 +190,6 @@ class PyH3C:
         """
         desc = "PyH3CSrv - A H3C authentication server written in Python."
         parser = argparse.ArgumentParser(description=desc)
-
-        parser.add_argument('-u', '--user', type=str, 
-                metavar='user_name', dest='user_name', action='store', 
-                help="User name for your account.")
-
-        parser.add_argument('-p', '--pass', type=str, 
-                metavar='password', dest='user_pass', action='store', 
-                help="Password for your account.")
-
-        parser.add_argument('-D', '--dhcp', type=str, 
-                metavar='dhcp_command', dest='dhcp_command', action='store', 
-                help="DHCP command for acquiring IP after authentication.")
 
         parser.add_argument('-d', '--dev', type=str, 
                 metavar='dev', dest='dev', action='store', 
@@ -248,24 +201,9 @@ class PyH3C:
 
         parser.add_argument('-k', '--kill', 
                 dest='kill_on', action='store_true', 
-                help="If there is another PyH3C instance running, kill it before start.")
+                help="If there is another PyH3CSrv instance running, kill it before start.")
 
         args = parser.parse_args(namespace=self.h3cSrvStatus)
-        return 
-
-    def load_plugins(self):
-        """
-        Load plugins according to pyh3c.conf
-        """
-        for p_item in self.h3cSrvStatus.plugins_to_load:
-            try:
-                self.plugins_loaded.append(getattr(self.h3cSrvStatus.plugins, p_item))
-            except AttributeError:
-                print msg(_('Failed while loading plugin ')) + '%s' % p_item + _('.')
-            else:
-                print msg(_('Plugin [ ')) + '%s' % p_item + _('] loaded.')
-
-        return
 
     def kill_instance(self):
         try:
@@ -300,7 +238,6 @@ class PyH3C:
 
         self.h3cSrvStatus.load_config()
         callbacks["hello_world"](self)
-        self.load_plugins()
         #end of initializing
 
         try:
@@ -319,8 +256,6 @@ class PyH3C:
 
         pc = pcap.pcap(self.h3cSrvStatus.dev)
         pc.setfilter(filter)
-
-        #self.send_start(callbacks["send_start_callback"])
 
         for ptime,pdata in pc:
             ether = dpktMini.ethernet.Ethernet(pdata)
@@ -355,105 +290,48 @@ class PyH3C:
                 hander_callback = "%s_callback" % handler
                 getattr(self,handler)(ether, callbacks[hander_callback])
 
-        print msg(_('PyH3C exits!'))
-        return
+        print msg(_('PyH3CSrv exits!'))
 
 
 def main():
 
-    pyh3c = PyH3C()
+    pyh3c_srv = PyH3CSrv()
 
-    def hello_world(pyh3c):
+    def hello_world(pyh3c_srv):
         print ''
-        print ' === PyH3C %s ===' % __version__
+        print ' === PyH3CSrv %s ===' % __version__
         print ser_act(_('Activities from server.'))
         print cli_act(_('Activities from client.'))
         print msg(_('Messages you may want to read.'))
         print ''
-        print msg(_('Using user name: ')) + '%s' % pyh3c.h3cSrvStatus.user_name
-        print msg(_('Using interface: ')) + '%s' % pyh3c.h3cSrvStatus.dev
-        print msg(_('Using DHCP script: ')) + '%s' % pyh3c.h3cSrvStatus.dhcp_command
-        print ''
-        return 
 
-    def start_request_handler_callback(pyh3c):
+    def start_request_handler_callback(pyh3c_srv):
         print ser_act(_('Sent out identity request.'))
 
-    def logoff_request_handler_callback(pyh3c):
+    def logoff_request_handler_callback(pyh3c_srv):
         print ser_act(_('Received logoff request.'))
 
-    def identity_handler_callback(pyh3c):
+    def identity_handler_callback(pyh3c_srv):
         print ser_act(_('Received client identity response, sent allocated request.'))
 
-    def h3c_unknown_handler_callback(ether, pyh3c):
+    def h3c_unknown_handler_callback(ether, pyh3c_srv):
         print ser_act(_('Received unknown h3c response from server.'))
 
-    def allocated_handler_callback(pyh3c, (ether, auth_re)):
+    def allocated_handler_callback(pyh3c_srv, (ether, auth_re)):
         if auth_re:
             print ser_act(_('Client ')) + '%s' % ether.src + _('authenticated.')
         else:
             print ser_act(_('Client ')) + '%s' % ether.src + _('authentication failed!')
-
-    def success_handler_callback(ether, pyh3c):
-        print ''
-        print   '  /---------------------------------------------\ '
-        print _(' | [^_^] Successfully passed the authentication! |')
-        print   '  \---------------------------------------------/ '
-        print ''
-
-        #@TODO: check operating system here
-        dhcp_command = "%s %s" % (pyh3c.h3cSrvStatus.dhcp_command, pyh3c.h3cSrvStatus.dev)
-        #@TODO@: use subprocess here
-        (status, output) = commands.getstatusoutput(dhcp_command)
-        print cli_act(_('running command: ')) + '%s' % dhcp_command + _('to get an IP.')
-        print ''
-        print output
-        print ''
-
-        print msg(_('Every thing is done now, happy surfing the Internet.')) 
-        print msg(_('I will send heart beat packets to keep you online.')) 
-
-    def failure_handler_callback(ether, pyh3c):
-        print ser_act(_('Received authentication failed packet from server.'))
-        radius = RADIUS_H3C(ether.data)
-        eap = RADIUS_H3C.EAP(radius.data)
-        error = eap.data[1:7]
-        try:
-            print ser_act(_('Error code: ')) + '\"%s\", %s' % (error, error_code[error])
-        except KeyError:
-            print ser_act(_('Error code: ')) + '\"%s\", %s' % (binascii.b2a_hex(error), 'Unknown error code!')
-            print _('     Please fire a bug report at:')
-            print '     https://github.com/houqp/pyh3c/issues'
-        print cli_act(_('Try to restart the authentication in one second.'))
-        sleep(1)
-        pyh3c.send_start(send_start_callback)
-    
-    def wtf_handler_callback(ether, pyh3c, eap):
-        print msg(_('Encountered an unknown packet!'))
-        print msg('----------------------------------------')
-        print ''
-        pyh3c.debug_packets(ether)
-        print ''
-        print _(' * It may be sent from some aliens, please help improve')
-        print _('   software by fire a bug report at:')
-        print '   https://github.com/houqp/pyh3c/issues'
-        print _('   Also remember to paste the above output in your report.')
-        print msg('----------------------------------------')
-
 
     callbacks = {
             'hello_world': hello_world,
             'start_request_handler_callback': start_request_handler_callback,
             'logoff_request_handler_callback': logoff_request_handler_callback,
             'identity_handler_callback': identity_handler_callback,
-            'h3c_unknown_handler_callback': h3c_unknown_handler_callback,
             'allocated_handler_callback': allocated_handler_callback,
-            'success_handler_callback': success_handler_callback,
-            'failure_handler_callback': failure_handler_callback,
-            'wtf_handler_callback': wtf_handler_callback
             }
 
-    pyh3c.main(callbacks)
+    pyh3c_srv.main(callbacks)
 
 
 

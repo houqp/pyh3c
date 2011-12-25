@@ -14,28 +14,15 @@ __email__ = "qingping.hou@gmail.com"
 
 _ = i18n.language.lgettext
 
-class H3CStatus():
+class H3CSrvStatus():
     def __init__(self):
         self.dev = ""
         self.cli_hwadd = ""
         self.srv_hwadd = ""
         self.user_name = ""
         self.user_pass = ""
-        self.dhcp_command = ""
         self.debug_on = False
         self.kill_on = False
-        self.plugins = []
-        self.plugins_to_load = []
-        # start keepalive plugin
-        self.ping_target = "8.8.8.8"
-        self.ping_interval = 2
-        #maxium ping failure time
-        self.ping_tolerence = 3
-        #time to wait after reauth because dhcp may take quite a long time
-        self.ping_after_reauth = 6
-        # endof keepalive plugin
-
-        self.auth_success = False
         self.parser = ConfigParser.SafeConfigParser()
 
     def load_config(self):
@@ -84,27 +71,6 @@ class H3CStatus():
             self.create_config()
 
         try:
-            self.ping_target = self.parser.get('sys_conf', 'ping_target')
-        except ConfigParser.NoOptionError:
-            self.ping_target = ""
-            self.create_config()
-
-        try:
-            self.ping_interval = float(self.parser.get('sys_conf', 'ping_interval'))
-        except ConfigParser.NoOptionError:
-            pass
-
-        try:
-            self.ping_tolerence = float(self.parser.get('sys_conf', 'ping_tolerence'))
-        except ConfigParser.NoOptionError:
-            pass
-
-        try:
-            self.ping_after_reauth = float(self.parser.get('sys_conf', 'ping_after_reauth'))
-        except ConfigParser.NoOptionError:
-            pass
-
-        try:
             self.new_plugins = self.parser.get('sys_conf', 'plugins')
             if self.new_plugins:
                 self.plugins_to_load.extend( 
@@ -112,11 +78,6 @@ class H3CStatus():
                 )
         except ConfigParser.NoOptionError:
             pass
-
-        # some plugins may not be loaded into self.plugins because they was not found under plugins directory.
-        self.plugins = __import__('plugins', globals(), locals(), self.plugins_to_load)
-
-        return 
 
     def create_config(self):
         """
@@ -153,26 +114,15 @@ class H3CStatus():
         if not self.dhcp_command:
             self.dhcp_command = raw_input('Please input the command you use to acquire ip with DHCP: ')
             print '------'
-        
-        if not self.ping_target:
-            print _('To disable online status checking, just type \"none\".')
-            self.ping_target = raw_input('Please input the target ip you want to ping for online checking: ')
-            print '------'
 
         self.save_config()
-        return 
 
     def save_config(self):
         """
-        write current configuration to pyh3c.conf
+        write current configuration to pyh3c_srv.conf
         """
         if not self.parser:
             self.parser = ConfigParser.SafeConfigParser()
-
-        #try:
-            #fp = open('/etc/pyh3c.conf', 'r+')
-        #except IOError:
-            #fp = open('/etc/pyh3c.conf', 'w')
 
         if not self.parser.has_section('sys_conf'):
             self.parser.add_section('sys_conf')
@@ -180,21 +130,16 @@ class H3CStatus():
             self.parser.add_section('account')
 
         self.parser.set('sys_conf', 'dev', self.dev)
-        self.parser.set('sys_conf', 'dhcp_command', self.dhcp_command)
-        self.parser.set('sys_conf', 'ping_target', self.ping_target)
-        self.parser.set('sys_conf', 'ping_interval', str(self.ping_interval))
-        self.parser.set('sys_conf', 'ping_tolerence', str(self.ping_tolerence))
-        self.parser.set('sys_conf', 'ping_after_reauth', str(self.ping_after_reauth))
         self.parser.set('account', 'user_name', self.user_name)
         self.parser.set('account', 'user_pass', self.user_pass)
         
         #ConfigParser module will delete all comments, here is a dirty hack
         #@TODO@: fix the ConfigParser module, or use cfgparse module
         try:
-            os.unlink('/etc/pyh3c.conf')
+            os.unlink('/etc/pyh3c_srv.conf')
         except OSError:
             pass
-        fp = open('/etc/pyh3c.conf', 'w')
+        fp = open('/etc/pyh3c_srv.conf', 'w')
         self.parser.write(fp)
         fp = fp.close()
         return 
