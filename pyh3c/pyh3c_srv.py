@@ -67,7 +67,7 @@ error_code = {
 
 class PyH3CSrv:
     def __init__(self):
-        self.h3cSrvStatus = H3CStatus()
+        self.h3cSrvStatus = H3CSrvStatus()
         self.lock_file = "/tmp/pyh3c_srv.lock"
 
     def do_nothing():
@@ -86,7 +86,7 @@ class PyH3CSrv:
         identity_packet = pack_ether(self.h3cSrvStatus.srv_hwadd, self.h3cSrvStatus.cli_hwadd, identity_radius)
         self.sender.send(str(identity_packet))
         self.callback_caller(callback, data)
-        exit(0)
+        #exit(0)
 
     def logoff_request_handler(self, ether, callback=do_nothing, data=None):
         """ 
@@ -122,8 +122,27 @@ class PyH3CSrv:
         #allocated_radius = pack_radius(0x01, 0x00, allocated_eap)
         #allocated_packet = pack_ether(self.h3cSrvStatus.cli_hwadd, self.h3cSrvStatus.srv_hwadd, allocated_radius)
         #self.sender.send(str(allocated_packet))
+        if auth_re:
+            self.send_auth_success(ether)
+        else:
+            self.send_auth_fail(ether)
         self.callback_caller(callback, (ether,auth_re))
 
+    def send_auth_success(self, ether):
+        radius = RADIUS_H3C(ether.data)
+        eap = RADIUS_H3C.EAP(radius.data)
+        succ_eap = pack_eap(0x03, eap.id + 1, 0x00, '\x00')
+        succ_radius = pack_radius(0x01, 0x00, succ_eap)
+        succ_packet = pack_ether(self.h3cSrvStatus.srv_hwadd, ether.src, succ_radius)
+        self.sender.send(str(succ_packet))
+
+    def send_auth_fail(self, ether):
+        radius = RADIUS_H3C(ether.data)
+        eap = RADIUS_H3C.EAP(radius.data)
+        succ_eap = pack_eap(0x04, eap.id + 1, 0x00, '\x00')
+        succ_radius = pack_radius(0x01, 0x00, succ_eap)
+        succ_packet = pack_ether(self.h3cSrvStatus.srv_hwadd, ether.src, succ_radius)
+        self.sender.send(str(succ_packet))
 
     def get_devices(self):
         """
@@ -304,24 +323,27 @@ def main():
         print cli_act(_('Activities from client.'))
         print msg(_('Messages you may want to read.'))
         print ''
+        print ser_act(_('Waiting for clients...'))
 
     def start_request_handler_callback(pyh3c_srv):
+        print cli_act(_('Client sent authentication request.'))
         print ser_act(_('Sent out identity request.'))
+
+    def identity_handler_callback(pyh3c_srv):
+        print cli_act(_('Client sent identity response.'))
+        print ser_act(_('Sent out allocated request.'))
 
     def logoff_request_handler_callback(pyh3c_srv):
         print ser_act(_('Received logoff request.'))
-
-    def identity_handler_callback(pyh3c_srv):
-        print ser_act(_('Received client identity response, sent allocated request.'))
 
     def h3c_unknown_handler_callback(ether, pyh3c_srv):
         print ser_act(_('Received unknown h3c response from server.'))
 
     def allocated_handler_callback(pyh3c_srv, (ether, auth_re)):
         if auth_re:
-            print ser_act(_('Client ')) + '%s' % ether.src + _('authenticated.')
+            print ser_act(_('Client ')) + '[%s]' % binascii.b2a_hex(ether.src) + _(' authenticated.')
         else:
-            print ser_act(_('Client ')) + '%s' % ether.src + _('authentication failed!')
+            print ser_act(_('Client ')) + '[%s]' % binascii.b2a_hex(ether.src) + _(' authentication failed!')
 
     callbacks = {
             'hello_world': hello_world,
