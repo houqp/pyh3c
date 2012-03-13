@@ -297,7 +297,9 @@ class PyH3C:
             print msg(_('You must run with root privilege!'))
             exit(-1)
 
+        self.h3cStatus.load_config()
         self.read_args()
+
         if self.h3cStatus.kill_on:
             self.kill_instance()
 
@@ -306,7 +308,6 @@ class PyH3C:
             exit(-1)
         atexit.register(self.clean_up)
 
-        self.h3cStatus.load_config()
         callbacks["hello_world"](self)
         self.load_plugins()
         #end of initializing

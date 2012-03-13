@@ -86,7 +86,6 @@ class PyH3CSrv:
         identity_packet = pack_ether(self.h3cSrvStatus.srv_hwadd, self.h3cSrvStatus.cli_hwadd, identity_radius)
         self.sender.send(str(identity_packet))
         self.callback_caller(callback, data)
-        exit(0)
 
     def logoff_request_handler(self, ether, callback=do_nothing, data=None):
         """ 
@@ -249,7 +248,10 @@ class PyH3CSrv:
             print msg(_('You must run with root privilege!'))
             exit(-1)
 
+        self.h3cSrvStatus.load_config()
+
         self.read_args()
+        
         if self.h3cSrvStatus.kill_on:
             self.kill_instance()
 
@@ -258,7 +260,6 @@ class PyH3CSrv:
             exit(-1)
         atexit.register(self.clean_up)
 
-        self.h3cSrvStatus.load_config()
         callbacks["hello_world"](self)
         #end of initializing
 
@@ -274,7 +275,7 @@ class PyH3CSrv:
 
         hw_s = binascii.b2a_hex(self.h3cSrvStatus.srv_hwadd)
         filter_srv_hwadd = "%s:%s:%s:%s:%s:%s" % (hw_s[0:2], hw_s[2:4], hw_s[4:6], hw_s[6:8], hw_s[8:10], hw_s[10:12])
-        filter = 'ether proto 0x888e and (ether host 01:d0:f8:00:00:03 or ether host 01:80:c2:00:00:03 or ether host %s)' % filter_srv_hwadd
+        filter = 'ether proto 0x888e and (ether host ff:ff:ff:ff:ff:ff or ether host 01:d0:f8:00:00:03 or ether host 01:80:c2:00:00:03 or ether host %s)' % filter_srv_hwadd
 
         pc = pcap.pcap(self.h3cSrvStatus.dev)
         pc.setfilter(filter)
@@ -326,6 +327,7 @@ def main():
         print cli_act(_('Activities from client.'))
         print msg(_('Messages you may want to read.'))
         print ''
+        print ser_act(_('Listening on device: ' + pyh3c_srv.h3cSrvStatus.dev))
         print ser_act(_('Waiting for clients...'))
 
     def start_request_handler_callback(pyh3c_srv):
