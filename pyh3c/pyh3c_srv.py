@@ -78,7 +78,7 @@ class PyH3CSrv:
 
     def start_request_handler(self, ether, callback=do_nothing, data=None):
         """ 
-        send identity request
+        Received start request, send identity request to client
         """
         self.h3cSrvStatus.cli_hwadd = ether.src
         identity_eap = pack_eap(0x01, 0x02, 0x01, '\x00')
@@ -86,10 +86,11 @@ class PyH3CSrv:
         identity_packet = pack_ether(self.h3cSrvStatus.srv_hwadd, self.h3cSrvStatus.cli_hwadd, identity_radius)
         self.sender.send(str(identity_packet))
         self.callback_caller(callback, data)
-        #exit(0)
+        exit(0)
 
     def logoff_request_handler(self, ether, callback=do_nothing, data=None):
         """ 
+        client request logoff do nothing, @TODO mark status  13.03 2012 (houqp)
         """
         #self.h3cSrvStatus.cli_hwadd = ether.src
         #identity_eap = pack_eap(0x01, 0x02, 0x01, '\x00')
@@ -100,7 +101,7 @@ class PyH3CSrv:
 
     def identity_handler(self, ether, callback=do_nothing, data=None):
         """ 
-        send allocated request
+        Received identity response, send allocated request
         """
         radius = RADIUS_H3C(ether.data)
         eap = RADIUS_H3C.EAP(radius.data)
@@ -112,11 +113,13 @@ class PyH3CSrv:
 
     def allocated_handler(self, ether, callback=do_nothing, data=None):
         """ 
-        response authentication result
+        Received allocated response, send authentication result
         """
         auth_re = False
         radius = RADIUS_H3C(ether.data)
         eap = RADIUS_H3C.EAP(radius.data)
+        #@TODO handle username and password here  13.03 2012 (houqp)
+
         #auth_data = '%s%s%s' % ( chr(len(self.h3cSrvStatus.user_pass)), self.h3cSrvStatus.user_pass, self.h3cSrvStatus.user_name )
         #allocated_eap = pack_eap(0x02, eap.id, 0x07, auth_data)
         #allocated_radius = pack_radius(0x01, 0x00, allocated_eap)
