@@ -146,6 +146,12 @@ class PyH3CSrv:
         succ_packet = pack_ether(self.h3cSrvStatus.srv_hwadd, ether.src, succ_radius)
         self.sender.send(str(succ_packet))
 
+    def wtf_handler(self, ether, callback, eap):
+        print "!!!!-START"
+        print "Received unkonwn packet, please check the dump:"
+        self.debug_packets(ether)
+        print "!!!!-END"
+
     def get_devices(self):
         """
         Get the list of all devices, return a list
